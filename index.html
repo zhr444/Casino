@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Казино «Путь»</title>
+<style>
+:root{
+  --bg:#0b0f14; --panel:#141b24; --panel2:#1b2430; --line:#2a3644;
+  --gold:#e3b341; --green:#2ea043; --red:#f85149; --text:#e6edf3; --muted:#8b98a8;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:radial-gradient(1200px 600px at 50% -10%,#16321f 0%,var(--bg) 60%);
+  color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  min-height:100vh; padding:16px;
+}
+.wrap{max-width:1100px;margin:0 auto}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+h1{font-size:22px;margin:0;color:var(--gold);letter-spacing:.5px;text-shadow:0 0 18px rgba(227,179,65,.35)}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 14px;text-align:center;min-width:110px}
+.stat span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.stat strong{font-size:17px;color:var(--gold)}
+
+/* путь */
+.path{display:flex;gap:8px;overflow-x:auto;padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:14px}
+.house{flex:0 0 auto;width:62px;height:66px;border-radius:12px;background:var(--panel2);border:2px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:.25s;opacity:.55}
+.house .num{font-size:10px;color:var(--muted)}
+.house .ic{font-size:22px}
+.house.active{border-color:var(--gold);box-shadow:0 0 18px rgba(227,179,65,.5);opacity:1;transform:translateY(-3px)}
+.house.done{opacity:1;border-color:var(--green);background:#12261a}
+
+/* layout */
+.layout{display:grid;grid-template-columns:1fr 280px;gap:14px}
+@media(max-width:820px){.layout{grid-template-columns:1fr}}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.panel.center{text-align:center}
+.panel h2{margin:6px 0 10px;font-size:20px;color:var(--gold)}
+.house-badge{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:20px;
+  padding:3px 12px;font-size:12px;color:var(--muted)}
+.hint{color:var(--muted);font-size:13px;line-height:1.55;margin:8px 0 14px}
+.hint b{color:var(--gold)}
+
+.btn{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;
+  padding:10px 18px;font-size:14px;cursor:pointer;transition:.18s;font-family:inherit}
+.btn:hover:not(:disabled){background:#25313f;border-color:#3d4d60}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.primary{background:linear-gradient(180deg,#e3b341,#c69427);color:#231a05;font-weight:700;border:none}
+.btn.primary:hover:not(:disabled){filter:brightness(1.12)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;justify-content:center}
+
+/* ставка */
+.betbox{margin:6px 0 4px}
+.bet-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.bet-row input[type=range]{flex:1;accent-color:var(--gold)}
+.bet-row strong{color:var(--gold);font-size:17px;min-width:110px;text-align:right}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.quick button{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:8px;
+  padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit}
+.quick button:hover{color:var(--gold);border-color:var(--gold)}
+
+/* кубик */
+.die{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;
+  background:#f2f5f8;color:#111;font-weight:800;font-size:19px;margin:3px;box-shadow:0 3px 0 #b6bfc9}
+.die.human{background:var(--gold);box-shadow:0 3px 0 #a97f16}
+
+/* дорожки */
+.lanes{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.lane{display:flex;align-items:center;gap:10px}
+.lane-name{width:130px;font-size:13px;color:var(--muted)}
+.lane.human .lane-name{color:var(--gold);font-weight:700}
+.lane-bar{flex:1;height:16px;background:#0a0e13;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.lane-fill{height:100%;background:linear-gradient(90deg,#2ea043,#7ee787);width:0;transition:width .35s}
+.lane.human .lane-fill{background:linear-gradient(90deg,#c69427,#e3b341)}
+.lane-pos{width:30px;text-align:right;font-size:13px;color:var(--muted)}
+
+/* карты */
+.cardgrid{border-collapse:collapse;margin:12px auto;font-size:13px}
+.cardgrid th{color:var(--muted);font-weight:600;padding:4px 8px;font-size:11px}
+.cardgrid td{width:40px;height:34px;text-align:center;background:var(--panel2);border:1px solid var(--line);
+  border-radius:6px;font-weight:700;color:#c9d5e2}
+.cardgrid td.hl{background:var(--gold);color:#231a05;box-shadow:0 0 14px rgba(227,179,65,.7)}
+.sumline{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:10px 0;font-size:15px}
+.sumline b{color:var(--gold);font-size:20px}
+
+/* слоты */
+.reels{display:flex;gap:12px;justify-content:center;margin:14px 0}
+.reel{display:flex;flex-direction:column;gap:5px;background:#0a0e13;border:1px solid var(--line);border-radius:12px;padding:8px}
+.reel .cell{width:54px;height:44px;display:flex;align-items:center;justify-content:center;font-size:24px;
+  background:var(--panel2);border-radius:8px;opacity:.45;transition:.2s}
+.reel .cell.hl{opacity:1;background:#2a2110;box-shadow:0 0 14px rgba(227,179,65,.6);transform:scale(1.06)}
+
+/* дартс */
+.throws{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.throw{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--muted)}
+.throw b{display:block;color:var(--gold);font-size:17px}
+
+/* рулетка */
+.opts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.opt{background:var(--panel2);border:2px solid var(--line);border-radius:10px;padding:10px 16px;cursor:pointer;
+  font-size:14px;transition:.18s;user-select:none}
+.opt.sel{border-color:var(--gold);background:#2a2110;color:var(--gold)}
+.opt.red{color:#ff8a80}
+.opt.black{color:#aab6c4}
+.numinput{width:80px;background:var(--panel2);border:2px solid var(--line);border-radius:10px;
+  padding:10px;color:var(--text);font-size:15px;text-align:center;font-family:inherit}
+.legend{font-size:12px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.7}
+.legend .r{color:#ff8a80}
+.legend .b{color:#aab6c4}
+
+/* результат */
+.result{margin-top:14px;padding:12px;border-radius:10px;text-align:center;font-size:15px;font-weight:600}
+.result.win{background:#12301c;border:1px solid var(--green);color:#7ee787}
+.result.lose{background:#301416;border:1px solid var(--red);color:#ff9a94}
+.result.push{background:#2a2410;border:1px solid var(--gold);color:var(--gold)}
+
+/* журнал */
+.log h3{margin:0 0 10px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+#logList{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto}
+.logitem{background:var(--panel2);border-left:3px solid var(--line);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--muted)}
+.logitem.win{border-color:var(--green);color:#9fe8ae}
+.logitem.lose{border-color:var(--red);color:#ff9a94}
+
+/* оверлей */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;
+  z-index:50;padding:20px;backdrop-filter:blur(4px)}
+.overlay.hidden{display:none}
+.modal{background:var(--panel);border:2px solid var(--gold);border-radius:18px;padding:32px;max-width:460px;
+  text-align:center;box-shadow:0 0 60px rgba(227,179,65,.3)}
+.modal .big{font-size:56px;margin-bottom:10px}
+.modal h2{margin:0 0 12px;color:var(--gold);font-size:24px}
+.modal p{color:var(--muted);line-height:1.6;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🎰 Казино «Путь»</h1>
+    <div class="stats">
+      <div class="stat"><span>Капитал</span><strong id="money">5 000 ₽</strong></div>
+      <div class="stat"><span>Дом</span><strong id="posLabel">Старт</strong></div>
+    </div>
+  </header>
+
+  <div class="path" id="path"></div>
+
+  <div class="layout">
+    <main id="gameArea"></main>
+    <aside class="panel log">
+      <h3>Журнал</h3>
+      <div id="logList"></div>
+    </aside>
+  </div>
+</div>
+
+<div class="overlay hidden" id="overlay"><div class="modal" id="modal"></div></div>
+
+<script>
+/* ============ УТИЛИТЫ ============ */
+const d6 = () => 1 + Math.floor(Math.random() * 6);
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const fmt = n => n.toLocaleString('ru-RU') + ' ₽';
+const $ = id => document.getElementById(id);
+
+/* ============ КОНСТАНТЫ ============ */
+const START_MONEY = 5000;
+const MIN_BET = 100;
+const PATH_LENGTH = 10;
+
+const GAMES = {
+  cockroach: { name: 'Тараканьи бега', icon: '🪳',
+    desc: 'Вы против трёх тараканов. Все бросают кубик и бегут к 30-й клетке. Кто первый — тот и забрал. Победа: <b>×3</b>.' },
+  blackjack: { name: 'Очко 21', icon: '🃏',
+    desc: 'Поле 6×6. Бросок двух кубиков задаёт строку и столбец — вы открываете карту. Набирайте до 21, но не больше. Дилер останавливается на 17. Победа: <b>×2</b>, ничья — возврат.' },
+  slots:   { name: 'Автомат', icon: '🎰',
+    desc: 'Три столбца по 6 ячеек: 3 🍒, 2 🍉, 1 семёрка. Кубик выбирает позицию в каждом столбце. Комбинации: <b>🍒🍒🍒 ×2</b>, <b>🍉🍉🍉 ×5</b>, <b>7️⃣7️⃣7️⃣ ×10</b>.' },
+  darts:   { name: 'Дартс', icon: '🎯',
+    desc: '5 ходов. Каждый ход — бросок двух кубиков, числа перемножаются. Цель — набрать <b>111+</b> за 5 ходов (максимум 180).' },
+  roulette:{ name: 'Рулетка', icon: '🎡',
+    desc: 'Бросок двух кубиков, числа перемножаются — выпадает число от 1 до 36. Ставьте на цвет или на точное число.' }
+};
+
+/* ============ СОСТОЯНИЕ ============ */
+let S = null;
+
+function newGame() {
+  const bag = [];
+  while (bag.length < PATH_LENGTH) bag.push(...shuffle(Object.keys(GAMES)));
+  S = {
+    money: START_MONEY,
+    pos: 0,
+    houses: bag.slice(0, PATH_LENGTH).map(t => ({ type: t, done: false })),
+    over: false,
+    log: []
+  };
+  $('overlay').classList.add('hidden');
+  $('logList').innerHTML = '';
+  addLog('Вы вошли в казино с ' + fmt(START_MONEY) + '. Впереди ' + PATH_LENGTH + ' домов.');
+  renderBoard();
+}
+
+/* ============ ЖУРНАЛ ============ */
+function addLog(text, cls = '') {
+  S.log.unshift({ text, cls });
+  const el = document.createElement('div');
+  el.className = 'logitem ' + cls;
+  el.textContent = text;
+  const list = $('logList');
+  list.insertBefore(el, list.firstChild);
+  while (list.children.length > 40) list.removeChild(list.lastChild);
+}
+
+/* ============ ОТРИСОВКА ============ */
+function renderMoney() {
+  $('money').textContent = fmt(S.money);
+  $('money').style.color = S.money < 1000 ? 'var(--red)' : 'var(--gold)';
+}
+
+function renderPath() {
+  $('path').innerHTML = S.houses.map((h, i) => {
+    const idx = i + 1;
+    const cls = ['house'];
+    if (h.done) cls.push('done');
+    if (idx === S.pos) cls.push('active');
+    return `<div class="${cls.join(' ')}">
+      <div class="num">${idx}</div>
+      <div class="ic">${h.done ? '✅' : GAMES[h.type].icon}</div>
+    </div>`;
+  }).join('');
+  $('posLabel').textContent = S.pos === 0 ? 'Старт' : (S.pos > PATH_LENGTH ? 'Финиш' : S.pos + ' / ' + PATH_LENGTH);
+}
+
+function renderBoard() {
+  renderMoney();
+  renderPath();
+  const area = $('gameArea');
+  area.innerHTML = '';
+
+  if (S.over) return;
+  if (S.pos === 0) return renderStart();
+  if (S.pos > PATH_LENGTH) return renderFinish();
+
+  const house = S.houses[S.pos - 1];
+  if (house.done) return renderDone(house);
+  return renderHouse(house);
+}
+
+function renderStart() {
+  $('gameArea').innerHTML = `
+    <div class="panel center">
+      <h2>Добро пожаловать</h2>
+      <p class="hint">
+        У вас <b>${fmt(START_MONEY)}</b>. Впереди <b>${PATH_LENGTH} домов</b>, в каждом — случайная игра.<br>
+        В каждый дом можно зайти <b>только один раз</b>. Ставку выбираете сами.<br>
+        Потеряете всё до финиша — тюрьма. Дойдёте и приумножите — богач.
+      </p>
+      <button class="btn primary" id="startBtn">🚪 Войти в первый дом</button>
+    </div>`;
+  $('startBtn').onclick = () => { S.pos = 1; renderBoard(); };
+}
+
+function renderDone(house) {
+  const g = GAMES[house.type];
+  $('gameArea').innerHTML = `
+    <div class="panel center">
+      <div class="house-badge">Дом ${S.pos} / ${PATH_LENGTH}</div>
+      <h2>${g.icon} ${g.name} — сыграно</h2>
+      <p class="hint">В этом доме вы уже испытали удачу. Второй раз не пустят.</p>
+      <button class="btn primary" id="nextBtn">Идти дальше →</button>
+    </div>`;
+  $('nextBtn').onclick = () => { S.pos++; renderBoard(); };
+}
+
+function renderFinish() {
+  const rich = S.money > START_MONEY;
+  $('gameArea').innerHTML = `
+    <div class="panel center">
+      <h2>${rich ? '💰 Вы обогатились!' : '🏁 Путь пройден'}</h2>
+      <p class="hint">
+        Вы прошли все ${PATH_LENGTH} домов и вышли с <b>${fmt(S.money)}</b>.<br>
+        ${rich ? 'Вы обставили казино и увезли больше, чем принесли. Поздравляем!' 
+               : 'Вы сохранили деньги, но приумножить не удалось. Казино всегда в плюсе.'}
+      </p>
+      <button class="btn primary" id="againBtn">🔁 Сыграть заново</button>
+    </div>`;
+  $('againBtn').onclick = newGame;
+}
+
+function renderHouse(house) {
+  const g = GAMES[house.type];
+  const area = $('gameArea');
+  area.innerHTML = `
+    <div class="panel">
+      <div class="house-badge">Дом ${S.pos} / ${PATH_LENGTH}</div>
+      <h2>${g.icon} ${g.name}</h2>
+      <p class="hint">${g.desc}</p>
+      <div class="betbox" id="betbox">
+        <div class="bet-row">
+          <span style="color:var(--muted);font-size:13px">Ставка</span>
+          <input type="range" id="betRange">
+          <strong id="betVal"></strong>
+        </div>
+        <div class="quick" id="quickBets">
+          <button data-b="100">100</button>
+          <button data-b="500">500</button>
+          <button data-b="1000">1000</button>
+          <button data-b="all">ВА-БАНК</button>
+        </div>
+        <div class="row" style="margin-top:0">
+          <button class="btn primary" id="playBtn">🎲 Сделать ставку и играть</button>
+        </div>
+      </div>
+      <div id="gameBody" style="display:none"></div>
+    </div>`;
+
+  const minBet = Math.min(MIN_BET, S.money);
+  const maxBet = S.money;
+  const step = Math.max(10, Math.floor((maxBet - minBet) / 50) || 10);
+  const range = $('betRange');
+  range.min = minBet; range.max = maxBet; range.step = step;
+  range.value = Math.min(maxBet, Math.max(minBet, 100));
+
+  const betVal = $('betVal');
+  const updateBet = () => {
+    let v = Math.min(maxBet, Math.max(minBet, Math.round(range.value)));
+    betVal.textContent = fmt(v);
+  };
+  range.oninput = updateBet; updateBet();
+
+  $('quickBets').onclick = e => {
+    const b = e.target.dataset.b;
+    if (!b) return;
+    if (b === 'all') range.value = maxBet;
+    else range.value = Math.min(maxBet, Math.max(minBet, +b));
+    updateBet();
+  };
+
+  $('playBtn').onclick = () => {
+    const bet = Math.min(maxBet, Math.max(minBet, Math.round(range.value)));
+    $('betbox').style.display = 'none';
+    const body = $('gameBody');
+    body.style.display = 'block';
+    S.money -= bet;
+    renderMoney();
+    addLog(`Дом ${S.pos}: ставка ${fmt(bet)} на «${g.name}».`);
+
+    let finished = false;
+    const finish = mult => {
+      if (finished) return;
+      finished = true;
+      const ret = Math.round(bet * mult);
+      S.money += ret;
+      renderMoney();
+      house.done = true;
+
+      const net = ret - bet;
+      addLog(
+        `${g.icon} ${g.name}: ${net > 0 ? '+' : ''}${fmt(net)} (выплата ×${mult})`,
+        net > 0 ? 'win' : net < 0 ? 'lose' : ''
+      );
+
+      if (S.money <= 0) {
+        setTimeout(() => gameOver('prison'), 1100);
+        return;
+      }
+      setTimeout(renderBoard, 1200);
+    };
+
+    startGame(house.type, body, bet, finish);
+  };
+}
+
+function gameOver(reason) {
+  S.over = true;
+  const ov = $('overlay');
+  $('modal').innerHTML = `
+    <div class="big">🚔</div>
+    <h2>Тюрьма</h2>
+    <p>Вы спустили все деньги до конца пути. Казино не прощает долгов — вас увезли.</p>
+    <button class="btn primary" id="ovBtn" style="margin-top:18px">🔁 Начать заново</button>`;
+  ov.classList.remove('hidden');
+  $('ovBtn').onclick = newGame;
+  addLog('Вы потеряли всё. Тюрьма.', 'lose');
+}
+
+/* =====================================================================
+   ИГРА 1 — ТАРАКАНЬИ БЕГА
+   ===================================================================== */
+function gameCockroach(root, bet, done) {
+  const GOAL = 30;
+  const racers = [
+    { name: 'Вы', emoji: '🪳', pos: 0, human: true },
+    { name: 'Рыжий', emoji: '🐜', pos: 0 },
+    { name: 'Усатый', emoji: '🐞', pos: 0 },
+    { name: 'Чёрный', emoji: '🦗', pos: 0 }
+  ];
+  let over = false;
+
+  root.innerHTML = `
+    <div class="lanes" id="lanes"></div>
+    <div class="row" id="diceRow" style="min-height:46px"></div>
+    <div class="row"><button class="btn primary" id="rollBtn">🎲 Бросить кубик</button></div>
+    <div id="res"></div>`;
+
+  const lanesEl = root.querySelector('#lanes');
+  const diceEl = root.querySelector('#diceRow');
+  const rollBtn = root.querySelector('#rollBtn');
+  const resEl = root.querySelector('#res');
+
+  const drawLanes = () => {
+    lanesEl.innerHTML = racers.map(r => `
+      <div class="lane ${r.human ? 'human' : ''}">
+        <span class="lane-name">${r.emoji} ${r.name}</span>
+        <div class="lane-bar"><div class="lane-fill" style="width:${Math.min(100, r.pos / GOAL * 100)}%"></div></div>
+        <span class="lane-pos">${r.pos}</span>
+      </div>`).join('');
+  };
+  drawLanes();
+
+  rollBtn.onclick = () => {
+    if (over) return;
+    rollBtn.disabled = true;
+
+    const rolls = racers.map(() => d6());
+    diceEl.innerHTML = rolls.map((v, i) => `<span class="die ${i === 0 ? 'human' : ''}">${v}</span>`).join('');
+    racers.forEach((r, i) => r.pos += rolls[i]);
+
+    setTimeout(() => {
+      drawLanes();
+
+      if (racers[0].pos >= GOAL) return endRound(true, '🏆 Вы дошли первым!');
+      const bot = racers.slice(1).find(r => r.pos >= GOAL);
+      if (bot) return endRound(false, `😞 ${bot.emoji} ${bot.name} пришёл первым.`);
+
+      rollBtn.disabled = false;
+    }, 400);
+  };
+
+  function endRound(win, msg) {
+    over = true;
+    rollBtn.disabled = true;
+    resEl.innerHTML = `<div class="result ${win ? 'win' : 'lose'}">${msg} ${win ? 'Выплата ×3' : 'Ставка потеряна.'}</div>`;
+    setTimeout(() => done(win ? 3 : 0), 1100);
+  }
+}
+
+/* =====================================================================
+   ИГРА 2 — ОЧКО 21
+   ===================================================================== */
+function gameBlackjack(root, bet, done) {
+  const grid = [];
+  for (let r = 0; r < 6; r++) {
+    grid.push([]);
+    for (let c = 0; c < 6; c++) grid[r].push(2 + Math.floor(Math.random() * 10));
+  }
+  let pSum = 0, dSum = 0, over = false;
+  const pCards = [], dCards = [];
+
+  root.innerHTML = `
+    <div class="sumline">
+      <div>Вы: <b id="pSum">0</b> <span id="pCards" style="color:var(--muted);font-size:13px"></span></div>
+      <div>Дилер: <b id="dSum">0</b> <span id="dCards" style="color:var(--muted);font-size:13px"></span></div>
+    </div>
+    <div id="gridBox"></div>
+    <div class="row">
+      <button class="btn primary" id="hitBtn">🃏 Взять карту</button>
+      <button class="btn" id="standBtn">✋ Хватит</button>
+    </div>
+    <div id="res"></div>`;
+
+  const gridBox = root.querySelector('#gridBox');
+  const resEl = root.querySelector('#res');
+  const hitBtn = root.querySelector('#hitBtn');
+  const standBtn = root.querySelector('#standBtn');
+
+  function drawGrid(hl) {
+    let html = '<table class="cardgrid"><tr><th></th>';
+    for (let c = 1; c <= 6; c++) html += `<th>${c}</th>`;
+    html += '</tr>';
+    for (let r = 0; r < 6; r++) {
+      html += `<tr><th>${r + 1}</th>`;
+      for (let c = 0; c < 6; c++) {
+        const on = hl && hl[0] === r && hl[1] === c;
+        html += `<td class="${on ? 'hl' : ''}">${grid[r][c]}</td>`;
+      }
+      html += '</tr>';
+    }
+    gridBox.innerHTML = html + '</table>';
+  }
+  drawGrid();
+
+  function drawCard() {
+    const r = d6() - 1, c = d6() - 1;
+    return { r, c, v: grid[r][c] };
+  }
+
+  function updateUI() {
+    root.querySelector('#pSum').textContent = pSum;
+    root.querySelector('#dSum').textContent = dSum;
+    root.querySelector('#pCards').textContent = pCards.map(x => x.v).join(' + ');
+    root.querySelector('#dCards').textContent = dCards.map(x => x.v).join(' + ');
+  }
+
+  hitBtn.onclick = () => {
+    if (over) return;
+    const card = drawCard();
+    pSum += card.v;
+    pCards.push(card);
+    drawGrid([card.r, card.c]);
+    updateUI();
+
+    if (pSum > 21) {
+      over = true;
+      hitBtn.disabled = standBtn.disabled = true;
+      resEl.innerHTML = `<div class="result lose">💥 Перебор (${pSum})! Ставка потеряна.</div>`;
+      setTimeout(() => done(0), 1200);
+    } else if (pSum === 21) {
+      standBtn.click();
+    }
+  };
+
+  standBtn.onclick = () => {
+    if (over) return;
+    over = true;
+    hitBtn.disabled = standBtn.disabled = true;
+    dealerTurn();
+  };
+
+  function dealerTurn() {
+    if (dSum >= 17) return resolve();
+    const card = drawCard();
+    dSum += card.v;
+    dCards.push(card);
+    drawGrid([card.r, card.c]);
+    updateUI();
+    setTimeout(dealerTurn, 650);
+  }
+
+  function resolve() {
+    let mult, msg, cls;
+    if (dSum > 21)      { mult = 2; msg = `Дилер перебрал (${dSum}) — вы выиграли! ×2`; cls = 'win'; }
+    else if (dSum > pSum) { mult = 0; msg = `Дилер ближе (${dSum} против ${pSum}). Вы проиграли.`; cls = 'lose'; }
+    else if (dSum < pSum) { mult = 2; msg = `У вас больше (${pSum} против ${dSum}) — победа! ×2`; cls = 'win'; }
+    else                 { mult = 1; msg = `Ничья (${pSum}). Ставка возвращается.`; cls = 'push'; }
+
+    resEl.innerHTML = `<div class="result ${cls}">${msg}</div>`;
+    setTimeout(() => done(mult), 1300);
+  }
+}
+
+/* =====================================================================
+   ИГРА 3 — АВТОМАТ
+   ===================================================================== */
+function gameSlots(root, bet, done) {
+  const base = ['🍒', '🍒', '🍒', '🍉', '🍉', '7️⃣'];
+  const reels = [0, 1, 2].map(() => shuffle([...base]));
+  let over = false;
+
+  root.innerHTML = `
+    <div class="reels" id="reels"></div>
+    <div class="row" id="diceRow" style="min-height:46px"></div>
+    <div class="row"><button class="btn primary" id="spinBtn">🎲 Крутить</button></div>
+    <div id="res"></div>`;
+
+  const reelsEl = root.querySelector('#reels');
+  const diceEl = root.querySelector('#diceRow');
+  const spinBtn = root.querySelector('#spinBtn');
+  const resEl = root.querySelector('#res');
+
+  function drawReels(hits) {
+    reelsEl.innerHTML = reels.map((reel, ci) => `
+      <div class="reel">
+        ${reel.map((s, ri) => `<div class="cell ${hits && hits[ci] === ri ? 'hl' : ''}">${s}</div>`).join('')}
+      </div>`).join('');
+  }
+  drawReels();
+
+  spinBtn.onclick = () => {
+    if (over) return;
+    over = true;
+    spinBtn.disabled = true;
+
+    const rolls = [d6(), d6(), d6()];
+    const hits = rolls.map(r => r - 1);
+    diceEl.innerHTML = rolls.map(v => `<span class="die">${v}</span>`).join('');
+
+    setTimeout(() => {
+      drawReels(hits);
+      const syms = hits.map((h, i) => reels[i][h]);
+
+      let mult = 0, msg = 'Ничего не совпало. Ставка потеряна.', cls = 'lose';
+      if (syms[0] === syms[1] && syms[1] === syms[2]) {
+        if (syms[0] === '🍒')      { mult = 2;  msg = '🍒🍒🍒 Три вишни! ×2'; cls = 'win'; }
+        else if (syms[0] === '🍉') { mult = 5;  msg = '🍉🍉🍉 Три арбуза! ×5'; cls = 'win'; }
+        else                       { mult = 10; msg = '7️⃣7️⃣7️⃣ ТРИ СЕМЁРКИ! ×10'; cls = 'win'; }
+      } else {
+        msg = `${syms.join(' ')} — не совпало. Ставка потеряна.`;
+      }
+
+      resEl.innerHTML = `<div class="result ${cls}">${msg}</div>`;
+      setTimeout(() => done(mult), 1300);
+    }, 500);
+  };
+}
+
+/* =====================================================================
+   ИГРА 4 — ДАРТС
+   ===================================================================== */
+function gameDarts(root, bet, done) {
+  const THROWS = 5;
+  const list = [];
+  let over = false;
+
+  root.innerHTML = `
+    <div class="throws" id="throws"></div>
+    <div class="sumline"><div>Сумма: <b id="total">0</b> / 111</div></div>
+    <div class="row" id="diceRow" style="min-height:46px"></div>
+    <div class="row"><button class="btn primary" id="throwBtn">🎯 Бросок (1/5)</button></div>
+    <div id="res"></div>`;
+
+  const throwsEl = root.querySelector('#throws');
+  const diceEl = root.querySelector('#diceRow');
+  const totalEl = root.querySelector('#total');
+  const throwBtn = root.querySelector('#throwBtn');
+  const resEl = root.querySelector('#res');
+
+  function drawThrows() {
+    throwsEl.innerHTML = list.map(t =>
+      `<div class="throw">${t.a} × ${t.b}<b>${t.p}</b></div>`).join('');
+    totalEl.textContent = list.reduce((s, t) => s + t.p, 0);
+  }
+
+  throwBtn.onclick = () => {
+    if (over) return;
+    const a = d6(), b = d6();
+    list.push({ a, b, p: a * b });
+    diceEl.innerHTML = `<span class="die">${a}</span><span class="die">${b}</span>`;
+    drawThrows();
+
+    if (list.length >= THROWS) {
+      over = true;
+      throwBtn.disabled = true;
+      setTimeout(resolve, 700);
+    } else {
+      throwBtn.textContent = `🎯 Бросок (${list.length + 1}/${THROWS})`;
+    }
+  };
+
+  function resolve() {
+    const total = list.reduce((s, t) => s + t.p, 0);
+    let mult, msg, cls;
+    if (total >= 111)     { mult = 6; msg = `🎯 ${total} очков — ЦЕЛЬ ВЗЯТА! Выплата ×6`; cls = 'win'; }
+    else if (total >= 85) { mult = 2; msg = `🎯 ${total} очков — неплохо! Выплата ×2`; cls = 'win'; }
+    else if (total >= 60) { mult = 1; msg = `🎯 ${total} очков — ставка возвращается.`; cls = 'push'; }
+    else                  { mult = 0; msg = `🎯 Всего ${total} очков. Мимо цели.`; cls = 'lose'; }
+    resEl.innerHTML = `<div class="result ${cls}">${msg}</div>`;
+    setTimeout(() => done(mult), 1300);
+  }
+}
+
+/* =====================================================================
+   ИГРА 5 — РУЛЕТКА
+   ===================================================================== */
+const RED_NUMS = [1, 2, 4, 6, 8, 10, 12];
+const BLACK_NUMS = [3, 5, 9, 15, 16, 18, 20, 24, 25, 30, 36];
+
+function gameRoulette(root, bet, done) {
+  let choice = 'red';
+  let num = 6;
+  let over = false;
+
+  root.innerHTML = `
+    <div class="opts" id="opts">
+      <div class="opt red sel" data-c="red">🔴 Красное ×2</div>
+      <div class="opt black" data-c="black">⚫ Чёрное ×2</div>
+      <div class="opt" data-c="num">🎯 Точное число ×8
+        <input class="numinput" id="numIn" type="number" min="1" max="36" value="6" style="margin-left:8px">
+      </div>
+    </div>
+    <div class="legend">
+      <span class="r">Красные: ${RED_NUMS.join(', ')}</span><br>
+      <span class="b">Чёрные: ${BLACK_NUMS.join(', ')}</span>
+    </div>
+    <div class="row" id="diceRow" style="min-height:46px;margin-top:14px"></div>
+    <div class="row"><button class="btn primary" id="spinBtn">🎡 Крутить</button></div>
+    <div id="res"></div>`;
+
+  const optsEl = root.querySelector('#opts');
+  const numIn = root.querySelector('#numIn');
+  const diceEl = root.querySelector('#diceRow');
+  const spinBtn = root.querySelector('#spinBtn');
+  const resEl = root.querySelector('#res');
+
+  optsEl.onclick = e => {
+    const opt = e.target.closest('.opt');
+    if (!opt) return;
+    if (e.target === numIn) return;
+    choice = opt.dataset.c;
+    [...optsEl.children].forEach(o => o.classList.toggle('sel', o === opt));
+  };
+  numIn.oninput = () => {
+    choice = 'num';
+    [...optsEl.children].forEach(o => o.classList.toggle('sel', o.dataset.c === 'num'));
+  };
+
+  spinBtn.onclick = () => {
+    if (over) return;
+    over = true;
+    spinBtn.disabled = true;
+
+    const a = d6(), b = d6();
+    const p = a * b;
+    diceEl.innerHTML = `<span class="die">${a}</span><span class="die">${b}</span>
+      <span style="font-size:22px;color:var(--muted);align-self:center;margin-left:8px">= <b style="color:var(--gold);font-size:26px">${p}</b></span>`;
+
+    setTimeout(() => {
+      const isRed = RED_NUMS.includes(p);
+      const colorName = isRed ? '🔴 красное' : '⚫ чёрное';
+      let mult = 0, msg, cls = 'lose';
+
+      if (choice === 'red' || choice === 'black') {
+        const hit = (choice === 'red') === isRed;
+        if (hit) { mult = 2; msg = `Выпало ${p} — ${colorName}. Вы угадали! ×2`; cls = 'win'; }
+        else     { msg = `Выпало ${p} — ${colorName}. Мимо.`; }
+      } else {
+        const n = Math.max(1, Math.min(36, parseInt(numIn.value) || 1));
+        if (p === n) { mult = 8; msg = `Выпало ${p} — точно в цель! ×8`; cls = 'win'; }
+        else         { msg = `Выпало ${p}, а вы ставили на ${n}. Мимо.`; }
+      }
+
+      resEl.innerHTML = `<div class="result ${cls}">${msg}</div>`;
+      setTimeout(() => done(mult), 1300);
+    }, 500);
+  };
+}
+
+/* =====================================================================
+   ЗАПУСК
+   ===================================================================== */
+function startGame(type, root, bet, done) {
+  switch (type) {
+    case 'cockroach': return gameCockroach(root, bet, done);
+    case 'blackjack': return gameBlackjack(root, bet, done);
+    case 'slots':     return gameSlots(root, bet, done);
+    case 'darts':     return gameDarts(root, bet, done);
+    case 'roulette':  return gameRoulette(root, bet, done);
+  }
+}
+
+newGame();
+</script>
+</body>
+</html>
