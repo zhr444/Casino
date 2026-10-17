@@ -1,208 +1,1782 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Казино «Путь»</title>
+<title>Казино «Путь» — Grand Casino Path</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0b0f14; --panel:#141b24; --panel2:#1b2430; --line:#2a3644;
-  --gold:#e3b341; --green:#2ea043; --red:#f85149; --text:#e6edf3; --muted:#8b98a8;
+:root[data-theme="dark"] {
+  --bg: #080b10;
+  --bg-accent: #132a1c;
+  --panel: rgba(20, 27, 36, 0.92);
+  --panel-solid: #141b24;
+  --panel2: #1c2633;
+  --panel3: #243040;
+  --line: #2c3a4b;
+  --line-bright: #3d5066;
+  --gold: #f0b938;
+  --gold-dim: rgba(240, 185, 56, 0.16);
+  --gold-glow: rgba(240, 185, 56, 0.4);
+  --green: #2ea043;
+  --green-bg: rgba(46, 160, 67, 0.16);
+  --green-text: #7ee787;
+  --red: #f85149;
+  --red-bg: rgba(248, 81, 73, 0.16);
+  --red-text: #ff9a94;
+  --text: #eef3f8;
+  --muted: #93a3b5;
+  --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --die-bg: #f8fafc;
+  --die-text: #0f172a;
+  --die-shadow: #cbd5e1;
+  --lane-track: #0b0f15;
 }
-*{box-sizing:border-box}
-body{
-  margin:0; background:radial-gradient(1200px 600px at 50% -10%,#16321f 0%,var(--bg) 60%);
-  color:var(--text); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
-  min-height:100vh; padding:16px;
+
+:root[data-theme="light"] {
+  --bg: #f3f0e8;
+  --bg-accent: #d9ece0;
+  --panel: rgba(255, 255, 255, 0.94);
+  --panel-solid: #ffffff;
+  --panel2: #f4f1ea;
+  --panel3: #e8e3d8;
+  --line: #d6cfc2;
+  --line-bright: #b8afa0;
+  --gold: #b7791f;
+  --gold-dim: rgba(183, 121, 31, 0.14);
+  --gold-glow: rgba(183, 121, 31, 0.28);
+  --green: #1f7a34;
+  --green-bg: rgba(31, 122, 52, 0.12);
+  --green-text: #166534;
+  --red: #cf222e;
+  --red-bg: rgba(207, 34, 46, 0.12);
+  --red-text: #991b1b;
+  --text: #1c2430;
+  --muted: #5c6877;
+  --shadow: 0 10px 26px rgba(28, 36, 48, 0.08);
+  --die-bg: #ffffff;
+  --die-text: #111827;
+  --die-shadow: #cbd5e1;
+  --lane-track: #e2ddd2;
 }
-.wrap{max-width:1100px;margin:0 auto}
-header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
-h1{font-size:22px;margin:0;color:var(--gold);letter-spacing:.5px;text-shadow:0 0 18px rgba(227,179,65,.35)}
-.stats{display:flex;gap:10px;flex-wrap:wrap}
-.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 14px;text-align:center;min-width:110px}
-.stat span{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
-.stat strong{font-size:17px;color:var(--gold)}
 
-/* путь */
-.path{display:flex;gap:8px;overflow-x:auto;padding:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:14px}
-.house{flex:0 0 auto;width:62px;height:66px;border-radius:12px;background:var(--panel2);border:2px solid var(--line);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:.25s;opacity:.55}
-.house .num{font-size:10px;color:var(--muted)}
-.house .ic{font-size:22px}
-.house.active{border-color:var(--gold);box-shadow:0 0 18px rgba(227,179,65,.5);opacity:1;transform:translateY(-3px)}
-.house.done{opacity:1;border-color:var(--green);background:#12261a}
+* {
+  box-sizing: border-box;
+}
 
-/* layout */
-.layout{display:grid;grid-template-columns:1fr 280px;gap:14px}
-@media(max-width:820px){.layout{grid-template-columns:1fr}}
+body {
+  margin: 0;
+  background: radial-gradient(1200px 650px at 50% -10%, var(--bg-accent) 0%, var(--bg) 65%);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  padding: 16px;
+  transition: background 0.3s ease, color 0.25s ease;
+}
 
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
-.panel.center{text-align:center}
-.panel h2{margin:6px 0 10px;font-size:20px;color:var(--gold)}
-.house-badge{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:20px;
-  padding:3px 12px;font-size:12px;color:var(--muted)}
-.hint{color:var(--muted);font-size:13px;line-height:1.55;margin:8px 0 14px}
-.hint b{color:var(--gold)}
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+}
 
-.btn{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;
-  padding:10px 18px;font-size:14px;cursor:pointer;transition:.18s;font-family:inherit}
-.btn:hover:not(:disabled){background:#25313f;border-color:#3d4d60}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn.primary{background:linear-gradient(180deg,#e3b341,#c69427);color:#231a05;font-weight:700;border:none}
-.btn.primary:hover:not(:disabled){filter:brightness(1.12)}
-.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;justify-content:center}
+/* Верхняя панель управления (Виджеты времени, темы, языка) */
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
 
-/* ставка */
-.betbox{margin:6px 0 4px}
-.bet-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.bet-row input[type=range]{flex:1;accent-color:var(--gold)}
-.bet-row strong{color:var(--gold);font-size:17px;min-width:110px;text-align:right}
-.quick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.quick button{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:8px;
-  padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit}
-.quick button:hover{color:var(--gold);border-color:var(--gold)}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-/* кубик */
-.die{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;
-  background:#f2f5f8;color:#111;font-weight:800;font-size:19px;margin:3px;box-shadow:0 3px 0 #b6bfc9}
-.die.human{background:var(--gold);box-shadow:0 3px 0 #a97f16}
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 0 16px var(--gold-glow);
+}
 
-/* дорожки */
-.lanes{display:flex;flex-direction:column;gap:8px;margin:12px 0}
-.lane{display:flex;align-items:center;gap:10px}
-.lane-name{width:130px;font-size:13px;color:var(--muted)}
-.lane.human .lane-name{color:var(--gold);font-weight:700}
-.lane-bar{flex:1;height:16px;background:#0a0e13;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
-.lane-fill{height:100%;background:linear-gradient(90deg,#2ea043,#7ee787);width:0;transition:width .35s}
-.lane.human .lane-fill{background:linear-gradient(90deg,#c69427,#e3b341)}
-.lane-pos{width:30px;text-align:right;font-size:13px;color:var(--muted)}
+h1 {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--gold);
+  letter-spacing: 0.3px;
+}
 
-/* карты */
-.cardgrid{border-collapse:collapse;margin:12px auto;font-size:13px}
-.cardgrid th{color:var(--muted);font-weight:600;padding:4px 8px;font-size:11px}
-.cardgrid td{width:40px;height:34px;text-align:center;background:var(--panel2);border:1px solid var(--line);
-  border-radius:6px;font-weight:700;color:#c9d5e2}
-.cardgrid td.hl{background:var(--gold);color:#231a05;box-shadow:0 0 14px rgba(227,179,65,.7)}
-.sumline{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:10px 0;font-size:15px}
-.sumline b{color:var(--gold);font-size:20px}
+.brand-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
 
-/* слоты */
-.reels{display:flex;gap:12px;justify-content:center;margin:14px 0}
-.reel{display:flex;flex-direction:column;gap:5px;background:#0a0e13;border:1px solid var(--line);border-radius:12px;padding:8px}
-.reel .cell{width:54px;height:44px;display:flex;align-items:center;justify-content:center;font-size:24px;
-  background:var(--panel2);border-radius:8px;opacity:.45;transition:.2s}
-.reel .cell.hl{opacity:1;background:#2a2110;box-shadow:0 0 14px rgba(227,179,65,.6);transform:scale(1.06)}
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 
-/* дартс */
-.throws{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:12px 0}
-.throw{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--muted)}
-.throw b{display:block;color:var(--gold);font-size:17px}
+.datetime-widget {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 12px;
+}
 
-/* рулетка */
-.opts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:10px 0}
-.opt{background:var(--panel2);border:2px solid var(--line);border-radius:10px;padding:10px 16px;cursor:pointer;
-  font-size:14px;transition:.18s;user-select:none}
-.opt.sel{border-color:var(--gold);background:#2a2110;color:var(--gold)}
-.opt.red{color:#ff8a80}
-.opt.black{color:#aab6c4}
-.numinput{width:80px;background:var(--panel2);border:2px solid var(--line);border-radius:10px;
-  padding:10px;color:var(--text);font-size:15px;text-align:center;font-family:inherit}
-.legend{font-size:12px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.7}
-.legend .r{color:#ff8a80}
-.legend .b{color:#aab6c4}
+.datetime-widget .clock-icon {
+  font-size: 16px;
+}
 
-/* результат */
-.result{margin-top:14px;padding:12px;border-radius:10px;text-align:center;font-size:15px;font-weight:600}
-.result.win{background:#12301c;border:1px solid var(--green);color:#7ee787}
-.result.lose{background:#301416;border:1px solid var(--red);color:#ff9a94}
-.result.push{background:#2a2410;border:1px solid var(--gold);color:var(--gold)}
+.datetime-widget .time-str {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--gold);
+}
 
-/* журнал */
-.log h3{margin:0 0 10px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
-#logList{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto}
-.logitem{background:var(--panel2);border-left:3px solid var(--line);border-radius:6px;padding:7px 10px;font-size:12px;color:var(--muted)}
-.logitem.win{border-color:var(--green);color:#9fe8ae}
-.logitem.lose{border-color:var(--red);color:#ff9a94}
+.datetime-widget .date-str {
+  color: var(--muted);
+  font-size: 11px;
+}
 
-/* оверлей */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;
-  z-index:50;padding:20px;backdrop-filter:blur(4px)}
-.overlay.hidden{display:none}
-.modal{background:var(--panel);border:2px solid var(--gold);border-radius:18px;padding:32px;max-width:460px;
-  text-align:center;box-shadow:0 0 60px rgba(227,179,65,.3)}
-.modal .big{font-size:56px;margin-bottom:10px}
-.modal h2{margin:0 0 12px;color:var(--gold);font-size:24px}
-.modal p{color:var(--muted);line-height:1.6;font-size:14px}
+.ctrl-select,
+.ctrl-btn {
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.18s ease;
+}
+
+.ctrl-select:hover,
+.ctrl-btn:hover {
+  border-color: var(--gold);
+  background: var(--panel3);
+}
+
+.ctrl-select:focus,
+.ctrl-btn:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+/* Статистика игрока */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.stat {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow);
+}
+
+.stat-info span {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 600;
+}
+
+.stat-info strong {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.stat-icon {
+  font-size: 22px;
+  opacity: 0.85;
+}
+
+/* Дорожка домов (Путь) */
+.path-wrap {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+}
+
+.path-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.path-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.path {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(68px, 1fr));
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.house {
+  height: 76px;
+  border-radius: 12px;
+  background: var(--panel2);
+  border: 2px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  transition: all 0.22s ease;
+  opacity: 0.65;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.house:hover {
+  opacity: 0.95;
+  border-color: var(--line-bright);
+  transform: translateY(-2px);
+}
+
+.house .num {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.house .ic {
+  font-size: 22px;
+}
+
+.house .hname {
+  font-size: 9px;
+  color: var(--muted);
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.house.active {
+  border-color: var(--gold);
+  background: var(--gold-dim);
+  box-shadow: 0 0 18px var(--gold-glow);
+  opacity: 1;
+  transform: translateY(-3px);
+}
+
+.house.done {
+  opacity: 1;
+  border-color: var(--green);
+  background: var(--green-bg);
+}
+
+.house.done .status-dot {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  font-size: 10px;
+}
+
+/* Основная сетка */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 310px;
+  gap: 14px;
+}
+
+@media (max-width: 880px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.panel.center {
+  text-align: center;
+}
+
+.house-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.house-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.panel h2 {
+  margin: 6px 0 8px;
+  font-size: 22px;
+  color: var(--gold);
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+  margin: 8px 0 16px;
+}
+
+.hint b {
+  color: var(--gold);
+}
+
+/* Кнопки */
+.btn {
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--panel3);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn.primary {
+  background: linear-gradient(180deg, #f3c14b, #cf9823);
+  color: #1e1604;
+  font-weight: 700;
+  border: none;
+  box-shadow: 0 4px 14px var(--gold-glow);
+}
+
+.btn.primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.btn.next-house {
+  background: var(--green-bg);
+  color: var(--green-text);
+  border: 1px solid var(--green);
+  font-weight: 700;
+}
+
+.btn.next-house:hover:not(:disabled) {
+  background: var(--green);
+  color: #fff;
+}
+
+.btn.sm {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 9px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  justify-content: center;
+}
+
+/* Блок ставки */
+.betbox {
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.bet-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.bet-row input[type=range] {
+  flex: 1;
+  accent-color: var(--gold);
+  cursor: pointer;
+}
+
+.bet-row strong {
+  color: var(--gold);
+  font-size: 19px;
+  font-family: 'JetBrains Mono', monospace;
+  min-width: 120px;
+  text-align: right;
+}
+
+.quick {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.quick button {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: 0.15s;
+}
+
+.quick button:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+/* Кубики */
+.die {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--die-bg);
+  color: var(--die-text);
+  font-weight: 800;
+  font-size: 20px;
+  margin: 4px;
+  box-shadow: 0 4px 0 var(--die-shadow);
+  animation: popIn 0.25s ease;
+}
+
+.die.human {
+  background: linear-gradient(180deg, #f3c14b, #d89f26);
+  color: #1e1604;
+  box-shadow: 0 4px 0 #9e7112;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.7) rotate(-10deg); opacity: 0.4; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Дорожки тараканьих бегов */
+.lanes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.lane {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lane-name {
+  width: 135px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: left;
+}
+
+.lane.human .lane-name {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.lane-bar {
+  flex: 1;
+  height: 18px;
+  background: var(--lane-track);
+  border-radius: 9px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.lane-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2ea043, #7ee787);
+  width: 0;
+  transition: width 0.35s ease;
+}
+
+.lane.human .lane-fill {
+  background: linear-gradient(90deg, #c69427, #f0b938);
+}
+
+.lane-pos {
+  width: 44px;
+  text-align: right;
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--muted);
+}
+
+/* Таблица карт 6x6 */
+.cardgrid {
+  border-collapse: separate;
+  border-spacing: 4px;
+  margin: 12px auto;
+  font-size: 13px;
+}
+
+.cardgrid th {
+  color: var(--muted);
+  font-weight: 600;
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+.cardgrid td {
+  width: 42px;
+  height: 36px;
+  text-align: center;
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  font-weight: 700;
+  color: var(--text);
+  transition: 0.2s;
+}
+
+.cardgrid td.hl {
+  background: var(--gold);
+  color: #1e1604;
+  box-shadow: 0 0 14px var(--gold-glow);
+  transform: scale(1.08);
+}
+
+.sumline {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 10px 0;
+  font-size: 15px;
+}
+
+.sumline b {
+  color: var(--gold);
+  font-size: 20px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Слоты */
+.reels {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 14px 0;
+}
+
+.reel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--lane-track);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.reel .cell {
+  width: 56px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: var(--panel2);
+  border-radius: 8px;
+  opacity: 0.45;
+  transition: 0.2s;
+}
+
+.reel .cell.hl {
+  opacity: 1;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold);
+  box-shadow: 0 0 14px var(--gold-glow);
+  transform: scale(1.06);
+}
+
+/* Дартс */
+.throws {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.throw {
+  background: var(--panel2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.throw b {
+  display: block;
+  color: var(--gold);
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+/* Рулетка */
+.opts {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.opt {
+  background: var(--panel2);
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.18s;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.opt.sel {
+  border-color: var(--gold);
+  background: var(--gold-dim);
+  color: var(--gold);
+}
+
+.numinput {
+  width: 72px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  font-family: inherit;
+}
+
+.legend {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 8px;
+  line-height: 1.7;
+}
+
+.legend .r {
+  color: var(--red-text);
+  font-weight: 600;
+}
+
+.legend .b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Блок результата и ручного перехода в следующий дом */
+.result {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.result.win {
+  background: var(--green-bg);
+  border: 1px solid var(--green);
+  color: var(--green-text);
+}
+
+.result.lose {
+  background: var(--red-bg);
+  border: 1px solid var(--red);
+  color: var(--red-text);
+}
+
+.result.push {
+  background: var(--gold-dim);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+}
+
+.decision-bar {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Журнал событий */
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.log h3 {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+#logList {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 460px;
+  overflow-y: auto;
+}
+
+.logitem {
+  background: var(--panel2);
+  border-left: 3px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.logitem.win {
+  border-color: var(--green);
+  color: var(--green-text);
+}
+
+.logitem.lose {
+  border-color: var(--red);
+  color: var(--red-text);
+}
+
+/* Модальное окно */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.modal {
+  background: var(--panel-solid);
+  border: 2px solid var(--gold);
+  border-radius: 18px;
+  padding: 32px;
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 60px var(--gold-glow);
+}
+
+.modal .big {
+  font-size: 56px;
+  margin-bottom: 10px;
+}
+
+.modal h2 {
+  margin: 0 0 12px;
+  color: var(--gold);
+  font-size: 24px;
+}
+
+.modal p {
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 14px;
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1>🎰 Казино «Путь»</h1>
-    <div class="stats">
-      <div class="stat"><span>Капитал</span><strong id="money">5 000 ₽</strong></div>
-      <div class="stat"><span>Дом</span><strong id="posLabel">Старт</strong></div>
+  <!-- Верхняя панель: название, часы/дата, тема, язык, звук -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">🎰</div>
+      <div>
+        <h1 id="appTitle">Казино «Путь»</h1>
+        <div class="brand-sub" id="appSub">Свободный выбор перехода между домами</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <!-- Виджет реального времени и даты -->
+      <div class="datetime-widget" title="Real-time clock">
+        <span class="clock-icon">🕒</span>
+        <div>
+          <div class="time-str" id="clockTime">--:--:--</div>
+          <div class="date-str" id="clockDate">---</div>
+        </div>
+      </div>
+
+      <!-- Выбор языка -->
+      <select class="ctrl-select" id="langSelect" aria-label="Language">
+        <option value="ru">🇷🇺 Русский</option>
+        <option value="en">🇬🇧 English</option>
+        <option value="kk">🇰🇿 Қазақша</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="zh">🇨🇳 中文</option>
+      </select>
+
+      <!-- Переключатель темы -->
+      <button class="ctrl-btn" id="themeBtn" type="button">
+        <span id="themeIcon">🌙</span>
+        <span id="themeLabel">Тёмная</span>
+      </button>
+
+      <!-- Звук -->
+      <button class="ctrl-btn" id="soundBtn" type="button">
+        <span id="soundIcon">🔊</span>
+      </button>
     </div>
   </header>
 
-  <div class="path" id="path"></div>
+  <!-- Панель статистики -->
+  <section class="stats-bar">
+    <div class="stat">
+      <div class="stat-info">
+        <span id="lblCapital">Капитал</span>
+        <strong id="money">5 000 ₽</strong>
+      </div>
+      <div class="stat-icon">💰</div>
+    </div>
+    <div class="stat">
+      <div class="stat-info">
+        <span id="lblProfit">Баланс пути</span>
+        <strong id="profitVal">0 ₽</strong>
+      </div>
+      <div class="stat-icon">📈</div>
+    </div>
+    <div class="stat">
+      <div class="stat-info">
+        <span id="lblHouse">Текущий дом</span>
+        <strong id="posLabel">Старт</strong>
+      </div>
+      <div class="stat-icon">🏛️</div>
+    </div>
+    <div class="stat">
+      <div class="stat-info">
+        <span id="lblCompleted">Пройдено домов</span>
+        <strong id="doneCount">0 / 10</strong>
+      </div>
+      <div class="stat-icon">✅</div>
+    </div>
+  </section>
 
+  <!-- Карта домов с ручным переходом -->
+  <section class="path-wrap">
+    <div class="path-header">
+      <span id="pathHint">💡 Нажмите на любой открытый дом или кнопку «Следующий дом →», когда сами решите двигаться дальше.</span>
+      <div class="path-actions">
+        <button class="btn sm" id="prevHouseTopBtn" type="button">← Назад</button>
+        <button class="btn sm next-house" id="nextHouseTopBtn" type="button">Следующий дом →</button>
+      </div>
+    </div>
+    <div class="path" id="path"></div>
+  </section>
+
+  <!-- Игровая область и журнал -->
   <div class="layout">
     <main id="gameArea"></main>
     <aside class="panel log">
-      <h3>Журнал</h3>
+      <div class="log-header">
+        <h3 id="lblLog">Журнал событий</h3>
+        <button class="btn sm" id="restartTopBtn" type="button">🔁 Новая игра</button>
+      </div>
       <div id="logList"></div>
     </aside>
   </div>
 </div>
 
-<div class="overlay hidden" id="overlay"><div class="modal" id="modal"></div></div>
+<div class="overlay hidden" id="overlay">
+  <div class="modal" id="modal"></div>
+</div>
 
 <script>
-/* ============ УТИЛИТЫ ============ */
+/* =====================================================================
+   ЛОКАЛИЗАЦИЯ (МУЛЬТИЯЗЫЧНОСТЬ)
+   ===================================================================== */
+const I18N = {
+  ru: {
+    locale: 'ru-RU',
+    currency: '₽',
+    title: 'Казино «Путь»',
+    sub: 'Вы сами решаете, когда перейти в следующий дом',
+    themeDark: 'Тёмная',
+    themeLight: 'Светлая',
+    capital: 'Капитал',
+    profit: 'Чистый профит',
+    house: 'Текущий дом',
+    completed: 'Сыграно домов',
+    start: 'Старт',
+    finish: 'Финиш',
+    pathHint: '💡 Вы сами управляете переходом: оставайтесь в доме сколько хотите или переходите в следующий дом в любой момент.',
+    prevHouse: '← Предыдущий',
+    nextHouse: 'Следующий дом →',
+    toFinish: '🏁 Завершить путь →',
+    logTitle: 'Журнал событий',
+    newGameBtn: '🔁 Новая игра',
+    welcomeTitle: 'Добро пожаловать в Казино «Путь»',
+    welcomeDesc: 'У вас <b>{money}</b> и <b>{len} домов</b> впереди.<br>Теперь <b>вы сами решаете</b>, когда переходить в следующий дом: после раунда вы можете изучить результат, сыграть ещё раз или перейти дальше.<br>Потеряете всё — тюрьма. Выйдете в плюс — триумф!',
+    enterFirst: '🚪 Войти в 1-й дом',
+    houseBadge: 'Дом {pos} из {len}',
+    playedBadge: '✓ Сыграно раундов: {cnt}',
+    betLabel: 'Ваша ставка',
+    allIn: 'ВА-БАНК',
+    placeBetBtn: '🎲 Сделать ставку и играть',
+    playAgainHouseBtn: '🎲 Сделать ещё ставку в этом доме',
+    goNextHouseBtn: '🚪 Перейти в следующий дом →',
+    finishJourneyBtn: '🏁 Завершить путь и подвести итог →',
+    finishRichTitle: '💰 Вы обыграли казино!',
+    finishSafeTitle: '🏁 Путь успешно пройден',
+    finishDesc: 'Вы завершили путь с капиталом <b>{money}</b> (результат: <b>{profit}</b>).<br>{extra}',
+    finishExtraWin: 'Блестящая стратегия! Вы вовремя переходили между домами и приумножили капитал.',
+    finishExtraEven: 'Вы сохранили свободу, но казино осталось при своих.',
+    playAgainMain: '🔁 Начать новый путь',
+    backToHouses: '⬅ Вернуться к домам',
+    prisonTitle: 'Тюрьма',
+    prisonDesc: 'Вы проиграли весь капитал до окончания пути. Казино не прощает долгов.',
+    logStart: 'Старт игры! Капитал: {money}. Впереди {len} домов.',
+    logBet: 'Дом {pos}: ставка {bet} в игре «{game}».',
+    logResult: '{icon} {game}: {net} (выплата ×{mult})',
+    logMoved: 'Переход в Дом {pos} («{game}»).',
+    logPrison: 'Капитал исчерпан. Вы попали в тюрьму.',
+    games: {
+      cockroach: {
+        name: 'Тараканьи бега',
+        desc: 'Вы против трёх тараканов. Все бросают кубик и бегут к 30-й клетке. Кто первый добежит — забирает банк. Победа: <b>×3</b>.',
+        rollBtn: '🎲 Бросить кубик',
+        racers: ['Вы', 'Рыжий', 'Усатый', 'Чёрный'],
+        win: '🏆 Вы прибежали первым! Выплата ×3.',
+        lose: '😞 {name} прибежал первым. Ставка потеряна.'
+      },
+      blackjack: {
+        name: 'Очко 21',
+        desc: 'Поле 6×6. Бросок двух кубиков открывает карту на пересечении строки и столбца. Наберите ближе к 21, чем дилер (дилер берёт до 17). Победа: <b>×2</b>, ничья — возврат.',
+        you: 'Вы',
+        dealer: 'Дилер',
+        hit: '🃏 Взять карту',
+        stand: '✋ Хватит',
+        bust: '💥 Перебор ({sum})! Ставка потеряна.',
+        dBust: '🎉 У дилера перебор ({dSum}) — победа! ×2',
+        dWin: '😞 Дилер ближе к 21 ({dSum} против {pSum}). Проигрыш.',
+        pWin: '🏆 У вас больше ({pSum} против {dSum}) — победа! ×2',
+        push: '🤝 Ничья ({pSum}). Ставка возвращена.'
+      },
+      slots: {
+        name: 'Слот-автомат',
+        desc: 'Три барабана по 6 ячеек: три 🍒, два 🍉 и одна 7️⃣. Три кубика выбирают ячейку в каждом столбце. Три 🍒 = <b>×2</b>, три 🍉 = <b>×5</b>, три 7️⃣ = <b>×10</b>.',
+        spin: '🎰 Крутить барабаны',
+        c2: '🍒🍒🍒 Три вишни! Выигрыш ×2',
+        c5: '🍉🍉🍉 Три арбуза! Выигрыш ×5',
+        c10: '7️⃣7️⃣7️⃣ ДЖЕКПОТ! Три семёрки! ×10',
+        miss: '{syms} — комбинация не совпала. Ставка потеряна.'
+      },
+      darts: {
+        name: 'Дартс',
+        desc: '5 бросков по два кубика (очки перемножаются). Наберите <b>111+</b> очков за 5 бросков для выплаты <b>×6</b> (85+ очков = <b>×2</b>, 60+ = возврат).',
+        sum: 'Сумма очков',
+        throwBtn: '🎯 Бросок ({cur}/{max})',
+        w6: '🎯 {total} очков — ЦЕЛЬ ВЗЯТА! Выплата ×6',
+        w2: '🎯 {total} очков — отличный результат! Выплата ×2',
+        w1: '🎯 {total} очков — ставка возвращается (×1).',
+        lose: '🎯 Всего {total} очков. Не хватило до 60.'
+      },
+      roulette: {
+        name: 'Рулетка кубиков',
+        desc: 'Бросок двух кубиков перемножается (число от 1 до 36). Ставьте на красное (×2), чёрное (×2) или точное произведение (×8).',
+        redOpt: '🔴 Красное ×2',
+        blackOpt: '⚫ Чёрное ×2',
+        numOpt: '🎯 Число ×8',
+        redList: 'Красные числа',
+        blackList: 'Чёрные числа',
+        spin: '🎡 Крутить рулетку',
+        redWord: '🔴 красное',
+        blackWord: '⚫ чёрное',
+        winColor: 'Выпало {p} ({color}). Вы угадали! ×2',
+        loseColor: 'Выпало {p} ({color}). Не угадали.',
+        winNum: 'Выпало {p} — точное попадание! ×8',
+        loseNum: 'Выпало {p}, а ваша ставка — {n}. Мимо.'
+      }
+    }
+  },
+  en: {
+    locale: 'en-US',
+    currency: '$',
+    title: 'Casino "The Path"',
+    sub: 'You decide when to advance to the next house',
+    themeDark: 'Dark',
+    themeLight: 'Light',
+    capital: 'Bankroll',
+    profit: 'Net Profit',
+    house: 'Current House',
+    completed: 'Houses Played',
+    start: 'Start',
+    finish: 'Finish',
+    pathHint: '💡 You control progression: stay in a house for another round or click "Next House →" whenever you are ready.',
+    prevHouse: '← Previous',
+    nextHouse: 'Next House →',
+    toFinish: '🏁 Finish Path →',
+    logTitle: 'Activity Log',
+    newGameBtn: '🔁 New Game',
+    welcomeTitle: 'Welcome to Casino "The Path"',
+    welcomeDesc: 'You start with <b>{money}</b> and <b>{len} houses</b> ahead.<br><b>You decide</b> when to move to the next house: review your round result, play another round, or move forward at your own pace.<br>Lose everything and go to prison; finish ahead to win big!',
+    enterFirst: '🚪 Enter House #1',
+    houseBadge: 'House {pos} of {len}',
+    playedBadge: '✓ Rounds played: {cnt}',
+    betLabel: 'Your Bet',
+    allIn: 'ALL-IN',
+    placeBetBtn: '🎲 Place Bet & Play',
+    playAgainHouseBtn: '🎲 Play Another Round Here',
+    goNextHouseBtn: '🚪 Go to Next House →',
+    finishJourneyBtn: '🏁 Complete Journey & Cash Out →',
+    finishRichTitle: '💰 You Beat the Casino!',
+    finishSafeTitle: '🏁 Path Completed',
+    finishDesc: 'You completed the path with <b>{money}</b> (Net: <b>{profit}</b>).<br>{extra}',
+    finishExtraWin: 'Great strategy! You timed your house transitions well and grew your bankroll.',
+    finishExtraEven: 'You survived the path intact, though the house edge held firm.',
+    playAgainMain: '🔁 Start New Run',
+    backToHouses: '⬅ Back to Houses',
+    prisonTitle: 'Prison',
+    prisonDesc: 'You lost your entire bankroll before finishing the path. The casino never forgives debts.',
+    logStart: 'Game started with {money}. {len} houses ahead.',
+    logBet: 'House {pos}: bet {bet} on "{game}".',
+    logResult: '{icon} {game}: {net} (payout ×{mult})',
+    logMoved: 'Entered House {pos} ("{game}").',
+    logPrison: 'Bankroll depleted. Sent to prison.',
+    games: {
+      cockroach: {
+        name: 'Roach Derby',
+        desc: 'You vs. three roaches. Everyone rolls a die and races to tile 30. First to reach 30 wins! Payout: <b>×3</b>.',
+        rollBtn: '🎲 Roll Die',
+        racers: ['You', 'Rusty', 'Whiskers', 'Shadow'],
+        win: '🏆 You crossed the finish line first! Payout ×3.',
+        lose: '😞 {name} finished first. Bet lost.'
+      },
+      blackjack: {
+        name: 'Grid 21',
+        desc: '6×6 card grid. Two dice pick row & column. Get closer to 21 than the dealer without busting (dealer stands on 17). Win: <b>×2</b>, Push: <b>×1</b>.',
+        you: 'You',
+        dealer: 'Dealer',
+        hit: '🃏 Hit Card',
+        stand: '✋ Stand',
+        bust: '💥 Bust ({sum})! Bet lost.',
+        dBust: '🎉 Dealer busts ({dSum}) — You win! ×2',
+        dWin: '😞 Dealer is closer ({dSum} vs {pSum}). You lose.',
+        pWin: '🏆 You beat the dealer ({pSum} vs {dSum})! ×2',
+        push: '🤝 Push ({pSum}). Bet returned.'
+      },
+      slots: {
+        name: 'Slot Machine',
+        desc: 'Three reels with 6 cells each: three 🍒, two 🍉, one 7️⃣. Dice select the row on each reel. 3×🍒 = <b>×2</b>, 3×🍉 = <b>×5</b>, 3×7️⃣ = <b>×10</b>.',
+        spin: '🎰 Spin Reels',
+        c2: '🍒🍒🍒 Triple Cherries! Payout ×2',
+        c5: '🍉🍉🍉 Triple Melons! Payout ×5',
+        c10: '7️⃣7️⃣7️⃣ JACKPOT! Triple Sevens! ×10',
+        miss: '{syms} — no match. Bet lost.'
+      },
+      darts: {
+        name: 'Dice Darts',
+        desc: '5 throws of two dice multiplied together. Score <b>111+</b> for <b>×6</b> (85+ = <b>×2</b>, 60+ = push).',
+        sum: 'Total Score',
+        throwBtn: '🎯 Throw ({cur}/{max})',
+        w6: '🎯 {total} pts — BULLSEYE GOAL! Payout ×6',
+        w2: '🎯 {total} pts — Nice series! Payout ×2',
+        w1: '🎯 {total} pts — Bet returned (×1).',
+        lose: '🎯 Only {total} pts. Missed the 60 threshold.'
+      },
+      roulette: {
+        name: 'Dice Roulette',
+        desc: 'Two dice multiplied together produce a number from 1 to 36. Bet on Red (×2), Black (×2), or Exact Product (×8).',
+        redOpt: '🔴 Red ×2',
+        blackOpt: '⚫ Black ×2',
+        numOpt: '🎯 Exact ×8',
+        redList: 'Red numbers',
+        blackList: 'Black numbers',
+        spin: '🎡 Spin Wheel',
+        redWord: '🔴 Red',
+        blackWord: '⚫ Black',
+        winColor: 'Rolled {p} ({color}). You won! ×2',
+        loseColor: 'Rolled {p} ({color}). Missed.',
+        winNum: 'Rolled {p} — Exact hit! ×8',
+        loseNum: 'Rolled {p}, your pick was {n}. Missed.'
+      }
+    }
+  },
+  kk: {
+    locale: 'kk-KZ',
+    currency: '₸',
+    title: '«Жол» Казиносы',
+    sub: 'Келесі үйге қашан өтуді өзіңіз шешесіз',
+    themeDark: 'Қараңғы',
+    themeLight: 'Жарық',
+    capital: 'Капитал',
+    profit: 'Таза пайда',
+    house: 'Ағымдағы үй',
+    completed: 'Ойналған үйлер',
+    start: 'Бастау',
+    finish: 'Мәре',
+    pathHint: '💡 Келесі үйге өту өз қолыңызда: осы үйде тағы ойнаңыз немесе дайын болғанда «Келесі үй →» батырмасын басыңыз.',
+    prevHouse: '← Алдыңғы',
+    nextHouse: 'Келесі үй →',
+    toFinish: '🏁 Жолды аяқтау →',
+    logTitle: 'Оқиғалар журналы',
+    newGameBtn: '🔁 Жаңа ойын',
+    welcomeTitle: '«Жол» Казиносына қош келдіңіз',
+    welcomeDesc: 'Сізде <b>{money}</b> бар, алда <b>{len} үй</b> тұр.<br>Келесі үйге қашан өтуді <b>өзіңіз шешесіз</b>: раундтан соң нәтижені көріп, қайта ойнауға немесе алға жылжуға болады.',
+    enterFirst: '🚪 1-үйге кіру',
+    houseBadge: '{pos}-үй / {len}',
+    playedBadge: '✓ Ойналған раунд: {cnt}',
+    betLabel: 'Сіздің бәсіңіз',
+    allIn: 'БАРЛЫҒЫН ТІГУ',
+    placeBetBtn: '🎲 Бәс тігу және ойнау',
+    playAgainHouseBtn: '🎲 Осы үйде тағы ойнау',
+    goNextHouseBtn: '🚪 Келесі үйге өту →',
+    finishJourneyBtn: '🏁 Жолды аяқтап, қорытындылау →',
+    finishRichTitle: '💰 Сіз казиноны жеңдіңіз!',
+    finishSafeTitle: '🏁 Жол сәтті өтілді',
+    finishDesc: 'Сіз жолды <b>{money}</b> капиталымен аяқтадыңыз (Нәтиже: <b>{profit}</b>).<br>{extra}',
+    finishExtraWin: 'Керемет стратегия! Капиталыңызды көбейттіңіз.',
+    finishExtraEven: 'Ақшаңызды сақтап қалдыңыз, бірақ көбейте алмадыңыз.',
+    playAgainMain: '🔁 Қайта бастау',
+    backToHouses: '⬅ Үйлерге оралу',
+    prisonTitle: 'Түрме',
+    prisonDesc: 'Сіз жол бітпей тұрып барлық ақшадан айырылдыңыз.',
+    logStart: 'Ойын басталды! Капитал: {money}. Алда {len} үй.',
+    logBet: '{pos}-үй: «{game}» ойынына {bet} тігілді.',
+    logResult: '{icon} {game}: {net} (төлем ×{mult})',
+    logMoved: '{pos}-үйге өтті («{game}»).',
+    logPrison: 'Қаражат таусылды. Түрме.',
+    games: {
+      cockroach: {
+        name: 'Тарақан жарысы',
+        desc: 'Сіз үш тарақанға қарсысыз. 30-торға кім бірінші жетсе, сол жеңеді. Төлем: <b>×3</b>.',
+        rollBtn: '🎲 Сүйек лақтыру',
+        racers: ['Сіз', 'Жирен', 'Мұртты', 'Қара'],
+        win: '🏆 Сіз бірінші келдіңіз! Төлем ×3.',
+        lose: '😞 {name} бірінші келді. Бәс ұтылды.'
+      },
+      blackjack: {
+        name: '21 ұпай',
+        desc: '6×6 кесте. Екі сүйек картаны ашады. 21-ден аспай дилерден көп жинаңыз (дилер 17-де тоқтайды). Жеңіс: <b>×2</b>.',
+        you: 'Сіз',
+        dealer: 'Дилер',
+        hit: '🃏 Карта алу',
+        stand: '✋ Жетеді',
+        bust: '💥 Асып кетті ({sum})! Ұтылыс.',
+        dBust: '🎉 Дилер асып кетті ({dSum}) — жеңіс! ×2',
+        dWin: '😞 Дилер жақынырақ ({dSum} қарсы {pSum}).',
+        pWin: '🏆 Сіз басым түстіңіз ({pSum} қарсы {dSum})! ×2',
+        push: '🤝 Тең ойын ({pSum}). Бәс қайтарылды.'
+      },
+      slots: {
+        name: 'Слот-автомат',
+        desc: 'Үш баған: үш 🍒, екі 🍉, бір 7️⃣. 3×🍒 = <b>×2</b>, 3×🍉 = <b>×5</b>, 3×7️⃣ = <b>×10</b>.',
+        spin: '🎰 Айналдыру',
+        c2: '🍒🍒🍒 Үш шие! ×2',
+        c5: '🍉🍉🍉 Үш қарбыз! ×5',
+        c10: '7️⃣7️⃣7️⃣ ДЖЕКПОТ! Үш жетілік! ×10',
+        miss: '{syms} — сәйкес келмеді.'
+      },
+      darts: {
+        name: 'Дартс',
+        desc: '5 лақтыру (екі сүйек көбейтіледі). Мақсат — <b>111+</b> ұпай (×6), 85+ (×2), 60+ (×1).',
+        sum: 'Ұпай саны',
+        throwBtn: '🎯 Лақтыру ({cur}/{max})',
+        w6: '🎯 {total} ұпай — МАҚСАТ ОРЫНДАЛДЫ! ×6',
+        w2: '🎯 {total} ұпай — жақсы нәтиже! ×2',
+        w1: '🎯 {total} ұпай — бәс қайтарылды.',
+        lose: '🎯 Бар болғаны {total} ұпай. Ұтылыс.'
+      },
+      roulette: {
+        name: 'Рулетка',
+        desc: 'Екі сүйектің көбейтіндісі (1–36). Қызылға (×2), қараға (×2) немесе нақты санға (×8) тігіңіз.',
+        redOpt: '🔴 Қызыл ×2',
+        blackOpt: '⚫ Қара ×2',
+        numOpt: '🎯 Нақты сан ×8',
+        redList: 'Қызыл сандар',
+        blackList: 'Қара сандар',
+        spin: '🎡 Айналдыру',
+        redWord: '🔴 қызыл',
+        blackWord: '⚫ қара',
+        winColor: '{p} ({color}) түсті. Таптыңыз! ×2',
+        loseColor: '{p} ({color}) түсті. Қателестіңіз.',
+        winNum: '{p} түсті — дәл тиді! ×8',
+        loseNum: '{p} түсті, сіз {n} таңдадыңыз.'
+      }
+    }
+  },
+  de: {
+    locale: 'de-DE',
+    currency: '€',
+    title: 'Casino „Der Pfad“',
+    sub: 'Sie entscheiden selbst, wann Sie ins nächste Haus weiterziehen',
+    themeDark: 'Dunkel',
+    themeLight: 'Hell',
+    capital: 'Kapital',
+    profit: 'Reingewinn',
+    house: 'Aktuelles Haus',
+    completed: 'Gespielte Häuser',
+    start: 'Start',
+    finish: 'Ziel',
+    pathHint: '💡 Sie bestimmen das Tempo: Spielen Sie weitere Runden im Haus oder klicken Sie auf „Nächstes Haus →“.',
+    prevHouse: '← Zurück',
+    nextHouse: 'Nächstes Haus →',
+    toFinish: '🏁 Pfad beenden →',
+    logTitle: 'Protokoll',
+    newGameBtn: '🔁 Neues Spiel',
+    welcomeTitle: 'Willkommen im Casino „Der Pfad“',
+    welcomeDesc: 'Sie starten mit <b>{money}</b> und haben <b>{len} Häuser</b> vor sich.<br><b>Sie entscheiden</b>, wann Sie ins nächste Haus wechseln.',
+    enterFirst: '🚪 1. Haus betreten',
+    houseBadge: 'Haus {pos} von {len}',
+    playedBadge: '✓ Gespielte Runden: {cnt}',
+    betLabel: 'Ihr Einsatz',
+    allIn: 'ALL-IN',
+    placeBetBtn: '🎲 Einsatz setzen & spielen',
+    playAgainHouseBtn: '🎲 Noch eine Runde hier spielen',
+    goNextHouseBtn: '🚪 Zum nächsten Haus →',
+    finishJourneyBtn: '🏁 Pfad abschließen →',
+    finishRichTitle: '💰 Sie haben das Casino geschlagen!',
+    finishSafeTitle: '🏁 Pfad beendet',
+    finishDesc: 'Sie beenden den Pfad mit <b>{money}</b> (Bilanz: <b>{profit}</b>).<br>{extra}',
+    finishExtraWin: 'Starke Strategie! Sie haben Ihr Kapital erfolgreich vermehrt.',
+    finishExtraEven: 'Sie haben überlebt, aber das Casino behält seinen Vorteil.',
+    playAgainMain: '🔁 Neu starten',
+    backToHouses: '⬅ Zurück zu den Häusern',
+    prisonTitle: 'Gefängnis',
+    prisonDesc: 'Sie haben Ihr gesamtes Kapital verloren.',
+    logStart: 'Spiel gestartet mit {money}. {len} Häuser voraus.',
+    logBet: 'Haus {pos}: {bet} Einsatz bei „{game}“.',
+    logResult: '{icon} {game}: {net} (Auszahlung ×{mult})',
+    logMoved: 'Haus {pos} betreten („{game}“).',
+    logPrison: 'Kapital verloren. Gefängnis.',
+    games: {
+      cockroach: {
+        name: 'Kakerlaken-Rennen',
+        desc: 'Sie gegen drei Kakerlaken. Wer zuerst Feld 30 erreicht, gewinnt! Auszahlung: <b>×3</b>.',
+        rollBtn: '🎲 Würfeln',
+        racers: ['Sie', 'Rostig', 'Schnurrbart', 'Schatten'],
+        win: '🏆 Sie sind als Erster im Ziel! ×3.',
+        lose: '😞 {name} war schneller.'
+      },
+      blackjack: {
+        name: '21-Raster',
+        desc: '6×6 Kartenraster. Zwei Würfel wählen Zeile & Spalte. Schlagen Sie den Dealer bis 21. Gewinn: <b>×2</b>.',
+        you: 'Sie',
+        dealer: 'Dealer',
+        hit: '🃏 Karte ziehen',
+        stand: '✋ Halten',
+        bust: '💥 Überkauft ({sum})!',
+        dBust: '🎉 Dealer überkauft ({dSum}) — Gewinn! ×2',
+        dWin: '😞 Dealer näher an 21 ({dSum} vs {pSum}).',
+        pWin: '🏆 Sie gewinnen ({pSum} vs {dSum})! ×2',
+        push: '🤝 Unentschieden ({pSum}). Einsatz zurück.'
+      },
+      slots: {
+        name: 'Spielautomat',
+        desc: 'Drei Walzen: 3×🍒 = <b>×2</b>, 3×🍉 = <b>×5</b>, 3×7️⃣ = <b>×10</b>.',
+        spin: '🎰 Walzen drehen',
+        c2: '🍒🍒🍒 Drei Kirschen! ×2',
+        c5: '🍉🍉🍉 Drei Melonen! ×5',
+        c10: '7️⃣7️⃣7️⃣ JACKPOT! ×10',
+        miss: '{syms} — leider kein Treffer.'
+      },
+      darts: {
+        name: 'Würfel-Darts',
+        desc: '5 Würfe mit je zwei multiplizierten Würfeln. <b>111+</b> Punkte = <b>×6</b> (85+ = ×2, 60+ = ×1).',
+        sum: 'Punkte',
+        throwBtn: '🎯 Wurf ({cur}/{max})',
+        w6: '🎯 {total} Punkte — HAUPTGEWINN! ×6',
+        w2: '🎯 {total} Punkte — Gut gemacht! ×2',
+        w1: '🎯 {total} Punkte — Einsatz zurück.',
+        lose: '🎯 Nur {total} Punkte.'
+      },
+      roulette: {
+        name: 'Würfel-Roulette',
+        desc: 'Zwei Würfel multipliziert (1–36). Rot (×2), Schwarz (×2) oder exakte Zahl (×8).',
+        redOpt: '🔴 Rot ×2',
+        blackOpt: '⚫ Schwarz ×2',
+        numOpt: '🎯 Zahl ×8',
+        redList: 'Rote Zahlen',
+        blackList: 'Schwarze Zahlen',
+        spin: '🎡 Drehen',
+        redWord: '🔴 Rot',
+        blackWord: '⚫ Schwarz',
+        winColor: '{p} ({color})! Gewonnen! ×2',
+        loseColor: '{p} ({color}). Leider daneben.',
+        winNum: '{p} — Volltreffer! ×8',
+        loseNum: '{p} statt {n}. Daneben.'
+      }
+    }
+  },
+  es: {
+    locale: 'es-ES',
+    currency: '€',
+    title: 'Casino «El Camino»',
+    sub: 'Tú decides cuándo avanzar a la siguiente casa',
+    themeDark: 'Oscuro',
+    themeLight: 'Claro',
+    capital: 'Capital',
+    profit: 'Beneficio neto',
+    house: 'Casa actual',
+    completed: 'Casas jugadas',
+    start: 'Inicio',
+    finish: 'Meta',
+    pathHint: '💡 Tú decides cuándo avanzar: juega otra ronda aquí o pulsa «Siguiente casa →» cuando quieras.',
+    prevHouse: '← Anterior',
+    nextHouse: 'Siguiente casa →',
+    toFinish: '🏁 Finalizar camino →',
+    logTitle: 'Registro',
+    newGameBtn: '🔁 Nueva partida',
+    welcomeTitle: 'Bienvenido al Casino «El Camino»',
+    welcomeDesc: 'Empiezas con <b>{money}</b> y <b>{len} casas</b> por delante.<br><b>Tú decides</b> cuándo pasar a la siguiente casa tras cada ronda.',
+    enterFirst: '🚪 Entrar a la 1.ª casa',
+    houseBadge: 'Casa {pos} de {len}',
+    playedBadge: '✓ Rondas jugadas: {cnt}',
+    betLabel: 'Tu apuesta',
+    allIn: 'TODO',
+    placeBetBtn: '🎲 Apostar y jugar',
+    playAgainHouseBtn: '🎲 Jugar otra ronda aquí',
+    goNextHouseBtn: '🚪 Ir a la siguiente casa →',
+    finishJourneyBtn: '🏁 Terminar camino y cobrar →',
+    finishRichTitle: '💰 ¡Venciste al casino!',
+    finishSafeTitle: '🏁 Camino completado',
+    finishDesc: 'Terminaste con <b>{money}</b> (Balance: <b>{profit}</b>).<br>{extra}',
+    finishExtraWin: '¡Excelente estrategia! Multiplicaste tu dinero.',
+    finishExtraEven: 'Conservaste tu libertad, pero la banca ganó.',
+    playAgainMain: '🔁 Jugar de nuevo',
+    backToHouses: '⬅ Volver a las casas',
+    prisonTitle: 'Prisión',
+    prisonDesc: 'Perdiste todo tu capital antes de llegar al final.',
+    logStart: 'Partida iniciada con {money}. {len} casas por delante.',
+    logBet: 'Casa {pos}: apuesta de {bet} en «{game}».',
+    logResult: '{icon} {game}: {net} (pago ×{mult})',
+    logMoved: 'Avanzaste a la Casa {pos} («{game}»).',
+    logPrison: 'Sin fondos. Enviado a prisión.',
+    games: {
+      cockroach: {
+        name: 'Carrera de cucarachas',
+        desc: 'Compites contra tres cucarachas hasta la casilla 30. Victoria: <b>×3</b>.',
+        rollBtn: '🎲 Lanzar dado',
+        racers: ['Tú', 'Roja', 'Bigotes', 'Sombra'],
+        win: '🏆 ¡Llegaste primero! Pago ×3.',
+        lose: '😞 {name} llegó primero.'
+      },
+      blackjack: {
+        name: '21 en Cuadrícula',
+        desc: 'Cuadrícula 6×6. Dos dados eligen fila y columna. Acércate a 21 más que el crupier. Victoria: <b>×2</b>.',
+        you: 'Tú',
+        dealer: 'Crupier',
+        hit: '🃏 Pedir carta',
+        stand: '✋ Plantarse',
+        bust: '💥 ¡Te pasaste ({sum})!',
+        dBust: '🎉 El crupier se pasó ({dSum}) — ¡Ganas! ×2',
+        dWin: '😞 El crupier gana ({dSum} vs {pSum}).',
+        pWin: '🏆 ¡Superas al crupier ({pSum} vs {dSum})! ×2',
+        push: '🤝 Empate ({pSum}). Apuesta devuelta.'
+      },
+      slots: {
+        name: 'Tragamonedas',
+        desc: 'Tres rodillos: 3×🍒 = <b>×2</b>, 3×🍉 = <b>×5</b>, 3×7️⃣ = <b>×10</b>.',
+        spin: '🎰 Girar',
+        c2: '🍒🍒🍒 ¡Tres cerezas! ×2',
+        c5: '🍉🍉🍉 ¡Tres sandías! ×5',
+        c10: '7️⃣7️⃣7️⃣ ¡PREMIO MAYOR! ×10',
+        miss: '{syms} — sin premio.'
+      },
+      darts: {
+        name: 'Dardos con dados',
+        desc: '5 tiros multiplicando dos dados. Suma <b>111+</b> para <b>×6</b> (85+ = ×2, 60+ = ×1).',
+        sum: 'Puntos totales',
+        throwBtn: '🎯 Tiro ({cur}/{max})',
+        w6: '🎯 {total} pts — ¡META LOGRADA! ×6',
+        w2: '🎯 {total} pts — ¡Buen tiro! ×2',
+        w1: '🎯 {total} pts — Apuesta devuelta.',
+        lose: '🎯 Solo {total} pts.'
+      },
+      roulette: {
+        name: 'Ruleta de dados',
+        desc: 'Dos dados multiplicados (1–36). Apuesta al Rojo (×2), Negro (×2) o Número exacto (×8).',
+        redOpt: '🔴 Rojo ×2',
+        blackOpt: '⚫ Negro ×2',
+        numOpt: '🎯 Exacto ×8',
+        redList: 'Números rojos',
+        blackList: 'Números negros',
+        spin: '🎡 Girar ruleta',
+        redWord: '🔴 rojo',
+        blackWord: '⚫ negro',
+        winColor: 'Salió {p} ({color}). ¡Acertaste! ×2',
+        loseColor: 'Salió {p} ({color}). Fallaste.',
+        winNum: 'Salió {p} — ¡Pleno! ×8',
+        loseNum: 'Salió {p}, apostaste al {n}.'
+      }
+    }
+  },
+  zh: {
+    locale: 'zh-CN',
+    currency: '¥',
+    title: '“征途”娱乐场',
+    sub: '由您自己决定何时前往下一间屋子',
+    themeDark: '深色',
+    themeLight: '浅色',
+    capital: '本金',
+    profit: '净收益',
+    house: '当前房间',
+    completed: '已玩房间',
+    start: '起点',
+    finish: '终点',
+    pathHint: '💡 自由掌控节奏：您可以在当前房间继续游玩，或随时点击“下一间屋子 →”前进。',
+    prevHouse: '← 上一间',
+    nextHouse: '下一间屋子 →',
+    toFinish: '🏁 完成征途 →',
+    logTitle: '事件日志',
+    newGameBtn: '🔁 新游戏',
+    welcomeTitle: '欢迎来到“征途”娱乐场',
+    welcomeDesc: '初始资金 <b>{money}</b>，前方共有 <b>{len} 间屋子</b>。<br>每局结束后<b>由您自己决定</b>何时进入下一间屋子：可留在本屋再来一局，也可随时前进。',
+    enterFirst: '🚪 进入第 1 间屋子',
+    houseBadge: '第 {pos} / {len} 间屋子',
+    playedBadge: '✓ 已玩局数：{cnt}',
+    betLabel: '下注金额',
+    allIn: '全押',
+    placeBetBtn: '🎲 下注并开始',
+    playAgainHouseBtn: '🎲 在本屋再玩一局',
+    goNextHouseBtn: '🚪 前往下一间屋子 →',
+    finishJourneyBtn: '🏁 结束征途并结算 →',
+    finishRichTitle: '💰 您赢过了赌场！',
+    finishSafeTitle: '🏁 征途完成',
+    finishDesc: '您以 <b>{money}</b> 完成了征途（净收益：<b>{profit}</b>）。<br>{extra}',
+    finishExtraWin: '精彩的策略！您把握住了前进的时机，成功让资金翻倍。',
+    finishExtraEven: '您全身而退，但未能赚取更多筹码。',
+    playAgainMain: '🔁 重新开始',
+    backToHouses: '⬅ 返回房间列表',
+    prisonTitle: '入狱',
+    prisonDesc: '您在抵达终点前输光了所有筹码。',
+    logStart: '游戏开始！初始本金 {money}，共 {len} 间屋子。',
+    logBet: '第 {pos} 间屋子：在“{game}”下注 {bet}。',
+    logResult: '{icon} {game}：{net}（赔率 ×{mult}）',
+    logMoved: '进入第 {pos} 间屋子（“{game}”）。',
+    logPrison: '本金耗尽，入狱。',
+    games: {
+      cockroach: {
+        name: '蟑螂赛跑',
+        desc: '您与三只蟑螂赛跑，掷骰子先到第 30 格者获胜。赔率：<b>×3</b>。',
+        rollBtn: '🎲 掷骰子',
+        racers: ['您', '小紅', '长须', '黑影'],
+        win: '🏆 您率先冲线！赔率 ×3。',
+        lose: '😞 {name} 率先冲线，下注失败。'
+      },
+      blackjack: {
+        name: '21点棋盘',
+        desc: '6×6 牌阵，两颗骰子决定行列。点数比庄家更接近 21 点即胜（庄家 17 点停牌）。获胜：<b>×2</b>。',
+        you: '您',
+        dealer: '庄家',
+        hit: '🃏 要牌',
+        stand: '✋ 停牌',
+        bust: '💥 爆牌 ({sum})！',
+        dBust: '🎉 庄家爆牌 ({dSum}) — 您赢了！×2',
+        dWin: '😞 庄家更接近 21 ({dSum} 对 {pSum})。',
+        pWin: '🏆 您战胜了庄家 ({pSum} 对 {dSum})！×2',
+        push: '🤝 平局 ({pSum})，退还本金。'
+      },
+      slots: {
+        name: '老虎机',
+        desc: '三列转轮：三个 🍒 = <b>×2</b>，三个 🍉 = <b>×5</b>，三个 7️⃣ = <b>×10</b>。',
+        spin: '🎰 旋转',
+        c2: '🍒🍒🍒 三个樱桃！×2',
+        c5: '🍉🍉🍉 三个西瓜！×5',
+        c10: '7️⃣7️⃣7️⃣ 头奖！三个七！×10',
+        miss: '{syms} — 未中奖。'
+      },
+      darts: {
+        name: '骰子飞镖',
+        desc: '5 次投掷，每次两颗骰子点数相乘。累计 <b>111+</b> 分获 <b>×6</b>（85+ = ×2，60+ = 退还）。',
+        sum: '当前总分',
+        throwBtn: '🎯 投掷 ({cur}/{max})',
+        w6: '🎯 {total} 分 — 达成目标！赔率 ×6',
+        w2: '🎯 {total} 分 — 表现不错！赔率 ×2',
+        w1: '🎯 {total} 分 — 退还本金。',
+        lose: '🎯 仅得 {total} 分，未达 60 分。'
+      },
+      roulette: {
+        name: '骰子轮盘',
+        desc: '两颗骰子点数相乘（1–36）。可押红色 (×2)、黑色 (×2) 或精确数字 (×8)。',
+        redOpt: '🔴 红色 ×2',
+        blackOpt: '⚫ 黑色 ×2',
+        numOpt: '🎯 精确数字 ×8',
+        redList: '红号',
+        blackList: '黑号',
+        spin: '🎡 旋转轮盘',
+        redWord: '🔴 红色',
+        blackWord: '⚫ 黑色',
+        winColor: '开出 {p} ({color})，猜中！×2',
+        loseColor: '开出 {p} ({color})，未猜中。',
+        winNum: '开出 {p} — 精确命中！×8',
+        loseNum: '开出 {p}，您押的是 {n}。'
+      }
+    }
+  }
+};
+
+const GAME_ICONS = {
+  cockroach: '🪳',
+  blackjack: '🃏',
+  slots: '🎰',
+  darts: '🎯',
+  roulette: '🎡'
+};
+
+/* =====================================================================
+   УТИЛИТЫ, ЗВУК, ТЕМА, ЧАСЫ
+   ===================================================================== */
 const d6 = () => 1 + Math.floor(Math.random() * 6);
-const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const fmt = n => n.toLocaleString('ru-RU') + ' ₽';
+const shuffle = a => {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
 const $ = id => document.getElementById(id);
 
-/* ============ КОНСТАНТЫ ============ */
+let currentLang = 'ru';
+let currentTheme = 'dark';
+let soundEnabled = true;
+let audioCtx = null;
+
+try {
+  const savedLang = localStorage.getItem('casino_lang');
+  if (savedLang && I18N[savedLang]) currentLang = savedLang;
+  const savedTheme = localStorage.getItem('casino_theme');
+  if (savedTheme === 'light' || savedTheme === 'dark') currentTheme = savedTheme;
+} catch (e) {}
+
+const t = () => I18N[currentLang];
+const tpl = (str, vars = {}) => str.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? vars[k] : ''));
+
+function fmt(n) {
+  const cfg = t();
+  const formatted = Math.round(n).toLocaleString(cfg.locale);
+  return cfg.currency === '$' || cfg.currency === '¥' ? `${cfg.currency}${formatted}` : `${formatted} ${cfg.currency}`;
+}
+
+function playTone(freq = 440, dur = 0.09, type = 'sine', gainVal = 0.06) {
+  if (!soundEnabled) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + dur);
+  } catch (e) {}
+}
+
+function sfxRoll() { playTone(320, 0.07, 'triangle', 0.05); setTimeout(() => playTone(480, 0.07, 'triangle', 0.05), 55); }
+function sfxWin() { playTone(523, 0.1, 'sine', 0.07); setTimeout(() => playTone(659, 0.1, 'sine', 0.07), 90); setTimeout(() => playTone(784, 0.18, 'sine', 0.08), 180); }
+function sfxLose() { playTone(240, 0.14, 'sawtooth', 0.05); setTimeout(() => playTone(180, 0.2, 'sawtooth', 0.05), 110); }
+
+/* Реальное время и дата с учётом выбранного языка */
+function updateClock() {
+  const now = new Date();
+  const locale = t().locale;
+  try {
+    $('clockTime').textContent = new Intl.DateTimeFormat(locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }).format(now);
+    $('clockDate').textContent = new Intl.DateTimeFormat(locale, {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }).format(now);
+  } catch (e) {
+    $('clockTime').textContent = now.toLocaleTimeString();
+    $('clockDate').textContent = now.toLocaleDateString();
+  }
+}
+setInterval(updateClock, 1000);
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  $('themeIcon').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+  $('themeLabel').textContent = currentTheme === 'dark' ? t().themeDark : t().themeLight;
+  try { localStorage.setItem('casino_theme', currentTheme); } catch (e) {}
+}
+
+function applyStaticLabels() {
+  const L = t();
+  document.documentElement.lang = currentLang;
+  $('appTitle').textContent = L.title;
+  $('appSub').textContent = L.sub;
+  $('lblCapital').textContent = L.capital;
+  $('lblProfit').textContent = L.profit;
+  $('lblHouse').textContent = L.house;
+  $('lblCompleted').textContent = L.completed;
+  $('pathHint').textContent = L.pathHint;
+  $('prevHouseTopBtn').textContent = L.prevHouse;
+  $('nextHouseTopBtn').textContent = S && S.pos === PATH_LENGTH ? L.toFinish : L.nextHouse;
+  $('lblLog').textContent = L.logTitle;
+  $('restartTopBtn').textContent = L.newGameBtn;
+  applyTheme();
+  updateClock();
+}
+
+/* =====================================================================
+   КОНСТАНТЫ И СОСТОЯНИЕ ИГРЫ
+   ===================================================================== */
 const START_MONEY = 5000;
 const MIN_BET = 100;
 const PATH_LENGTH = 10;
 
-const GAMES = {
-  cockroach: { name: 'Тараканьи бега', icon: '🪳',
-    desc: 'Вы против трёх тараканов. Все бросают кубик и бегут к 30-й клетке. Кто первый — тот и забрал. Победа: <b>×3</b>.' },
-  blackjack: { name: 'Очко 21', icon: '🃏',
-    desc: 'Поле 6×6. Бросок двух кубиков задаёт строку и столбец — вы открываете карту. Набирайте до 21, но не больше. Дилер останавливается на 17. Победа: <b>×2</b>, ничья — возврат.' },
-  slots:   { name: 'Автомат', icon: '🎰',
-    desc: 'Три столбца по 6 ячеек: 3 🍒, 2 🍉, 1 семёрка. Кубик выбирает позицию в каждом столбце. Комбинации: <b>🍒🍒🍒 ×2</b>, <b>🍉🍉🍉 ×5</b>, <b>7️⃣7️⃣7️⃣ ×10</b>.' },
-  darts:   { name: 'Дартс', icon: '🎯',
-    desc: '5 ходов. Каждый ход — бросок двух кубиков, числа перемножаются. Цель — набрать <b>111+</b> за 5 ходов (максимум 180).' },
-  roulette:{ name: 'Рулетка', icon: '🎡',
-    desc: 'Бросок двух кубиков, числа перемножаются — выпадает число от 1 до 36. Ставьте на цвет или на точное число.' }
-};
-
-/* ============ СОСТОЯНИЕ ============ */
 let S = null;
+let activeRound = false; // идёт ли сейчас розыгрыш внутри дома
 
 function newGame() {
   const bag = [];
-  while (bag.length < PATH_LENGTH) bag.push(...shuffle(Object.keys(GAMES)));
+  const keys = Object.keys(GAME_ICONS);
+  while (bag.length < PATH_LENGTH) bag.push(...shuffle([...keys]));
   S = {
     money: START_MONEY,
     pos: 0,
-    houses: bag.slice(0, PATH_LENGTH).map(t => ({ type: t, done: false })),
+    houses: bag.slice(0, PATH_LENGTH).map(type => ({ type, done: false, rounds: 0, lastResult: null })),
     over: false,
     log: []
   };
+  activeRound = false;
   $('overlay').classList.add('hidden');
   $('logList').innerHTML = '';
-  addLog('Вы вошли в казино с ' + fmt(START_MONEY) + '. Впереди ' + PATH_LENGTH + ' домов.');
+  addLog(tpl(t().logStart, { money: fmt(START_MONEY), len: PATH_LENGTH }));
   renderBoard();
 }
 
-/* ============ ЖУРНАЛ ============ */
+/* =====================================================================
+   ЖУРНАЛ
+   ===================================================================== */
 function addLog(text, cls = '') {
   S.log.unshift({ text, cls });
   const el = document.createElement('div');
@@ -213,28 +1787,72 @@ function addLog(text, cls = '') {
   while (list.children.length > 40) list.removeChild(list.lastChild);
 }
 
-/* ============ ОТРИСОВКА ============ */
-function renderMoney() {
+/* =====================================================================
+   НАВИГАЦИЯ МЕЖДУ ДОМАМИ (РУЧНОЕ УПРАВЛЕНИЕ ИГРОКОМ)
+   ===================================================================== */
+function goToHouse(targetPos) {
+  if (S.over || activeRound) return;
+  if (targetPos < 0 || targetPos > PATH_LENGTH + 1) return;
+  S.pos = targetPos;
+  if (S.pos >= 1 && S.pos <= PATH_LENGTH) {
+    const h = S.houses[S.pos - 1];
+    const gName = t().games[h.type].name;
+    addLog(tpl(t().logMoved, { pos: S.pos, game: gName }));
+  }
+  playTone(400, 0.06, 'sine', 0.04);
+  renderBoard();
+}
+
+/* =====================================================================
+   ОТРИСОВКА ИНТЕРФЕЙСА
+   ===================================================================== */
+function renderStats() {
   $('money').textContent = fmt(S.money);
   $('money').style.color = S.money < 1000 ? 'var(--red)' : 'var(--gold)';
+
+  const diff = S.money - START_MONEY;
+  const sign = diff > 0 ? '+' : '';
+  $('profitVal').textContent = sign + fmt(diff);
+  $('profitVal').style.color = diff > 0 ? 'var(--green-text)' : diff < 0 ? 'var(--red-text)' : 'var(--gold)';
+
+  const doneCnt = S.houses.filter(h => h.done).length;
+  $('doneCount').textContent = `${doneCnt} / ${PATH_LENGTH}`;
+
+  const L = t();
+  $('posLabel').textContent = S.pos === 0 ? L.start : (S.pos > PATH_LENGTH ? L.finish : `${S.pos} / ${PATH_LENGTH}`);
+
+  $('prevHouseTopBtn').disabled = activeRound || S.pos <= 1 || S.pos > PATH_LENGTH;
+  $('nextHouseTopBtn').disabled = activeRound || S.pos > PATH_LENGTH;
+  $('nextHouseTopBtn').textContent = S.pos === PATH_LENGTH ? L.toFinish : L.nextHouse;
 }
 
 function renderPath() {
+  const L = t();
   $('path').innerHTML = S.houses.map((h, i) => {
     const idx = i + 1;
     const cls = ['house'];
     if (h.done) cls.push('done');
     if (idx === S.pos) cls.push('active');
-    return `<div class="${cls.join(' ')}">
-      <div class="num">${idx}</div>
-      <div class="ic">${h.done ? '✅' : GAMES[h.type].icon}</div>
+    const gName = L.games[h.type].name;
+    return `<div class="${cls.join(' ')}" data-idx="${idx}" title="${idx}. ${gName}">
+      ${h.done ? '<span class="status-dot">✅</span>' : ''}
+      <div class="num">#${idx}</div>
+      <div class="ic">${GAME_ICONS[h.type]}</div>
+      <div class="hname">${gName}</div>
     </div>`;
   }).join('');
-  $('posLabel').textContent = S.pos === 0 ? 'Старт' : (S.pos > PATH_LENGTH ? 'Финиш' : S.pos + ' / ' + PATH_LENGTH);
+
+  $('path').querySelectorAll('.house').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = parseInt(el.dataset.idx, 10);
+      if (!activeRound) goToHouse(idx);
+    });
+  });
 }
 
 function renderBoard() {
-  renderMoney();
+  applyStaticLabels();
+  renderStats();
   renderPath();
   const area = $('gameArea');
   area.innerHTML = '';
@@ -244,146 +1862,195 @@ function renderBoard() {
   if (S.pos > PATH_LENGTH) return renderFinish();
 
   const house = S.houses[S.pos - 1];
-  if (house.done) return renderDone(house);
   return renderHouse(house);
 }
 
 function renderStart() {
+  const L = t();
   $('gameArea').innerHTML = `
     <div class="panel center">
-      <h2>Добро пожаловать</h2>
-      <p class="hint">
-        У вас <b>${fmt(START_MONEY)}</b>. Впереди <b>${PATH_LENGTH} домов</b>, в каждом — случайная игра.<br>
-        В каждый дом можно зайти <b>только один раз</b>. Ставку выбираете сами.<br>
-        Потеряете всё до финиша — тюрьма. Дойдёте и приумножите — богач.
-      </p>
-      <button class="btn primary" id="startBtn">🚪 Войти в первый дом</button>
+      <h2>${L.welcomeTitle}</h2>
+      <p class="hint">${tpl(L.welcomeDesc, { money: fmt(START_MONEY), len: PATH_LENGTH })}</p>
+      <div class="row">
+        <button class="btn primary" id="startBtn" type="button">${L.enterFirst}</button>
+      </div>
     </div>`;
-  $('startBtn').onclick = () => { S.pos = 1; renderBoard(); };
-}
-
-function renderDone(house) {
-  const g = GAMES[house.type];
-  $('gameArea').innerHTML = `
-    <div class="panel center">
-      <div class="house-badge">Дом ${S.pos} / ${PATH_LENGTH}</div>
-      <h2>${g.icon} ${g.name} — сыграно</h2>
-      <p class="hint">В этом доме вы уже испытали удачу. Второй раз не пустят.</p>
-      <button class="btn primary" id="nextBtn">Идти дальше →</button>
-    </div>`;
-  $('nextBtn').onclick = () => { S.pos++; renderBoard(); };
+  $('startBtn').addEventListener('click', () => goToHouse(1));
 }
 
 function renderFinish() {
-  const rich = S.money > START_MONEY;
+  const L = t();
+  const diff = S.money - START_MONEY;
+  const rich = diff > 0;
+  const sign = diff > 0 ? '+' : '';
   $('gameArea').innerHTML = `
     <div class="panel center">
-      <h2>${rich ? '💰 Вы обогатились!' : '🏁 Путь пройден'}</h2>
+      <h2>${rich ? L.finishRichTitle : L.finishSafeTitle}</h2>
       <p class="hint">
-        Вы прошли все ${PATH_LENGTH} домов и вышли с <b>${fmt(S.money)}</b>.<br>
-        ${rich ? 'Вы обставили казино и увезли больше, чем принесли. Поздравляем!' 
-               : 'Вы сохранили деньги, но приумножить не удалось. Казино всегда в плюсе.'}
+        ${tpl(L.finishDesc, {
+          money: fmt(S.money),
+          profit: sign + fmt(diff),
+          extra: rich ? L.finishExtraWin : L.finishExtraEven
+        })}
       </p>
-      <button class="btn primary" id="againBtn">🔁 Сыграть заново</button>
+      <div class="row">
+        <button class="btn" id="backHousesBtn" type="button">${L.backToHouses}</button>
+        <button class="btn primary" id="againBtn" type="button">${L.playAgainMain}</button>
+      </div>
     </div>`;
-  $('againBtn').onclick = newGame;
+  $('backHousesBtn').addEventListener('click', () => goToHouse(PATH_LENGTH));
+  $('againBtn').addEventListener('click', newGame);
 }
 
 function renderHouse(house) {
-  const g = GAMES[house.type];
+  const L = t();
+  const g = L.games[house.type];
+  const icon = GAME_ICONS[house.type];
+  const isLast = S.pos === PATH_LENGTH;
+
   const area = $('gameArea');
   area.innerHTML = `
     <div class="panel">
-      <div class="house-badge">Дом ${S.pos} / ${PATH_LENGTH}</div>
-      <h2>${g.icon} ${g.name}</h2>
+      <div class="house-top">
+        <div class="house-badge">${tpl(L.houseBadge, { pos: S.pos, len: PATH_LENGTH })}</div>
+        ${house.rounds > 0 ? `<div class="house-badge" style="border-color:var(--green);color:var(--green-text)">${tpl(L.playedBadge, { cnt: house.rounds })}</div>` : ''}
+      </div>
+      <h2>${icon} ${g.name}</h2>
       <p class="hint">${g.desc}</p>
+
       <div class="betbox" id="betbox">
         <div class="bet-row">
-          <span style="color:var(--muted);font-size:13px">Ставка</span>
+          <span style="color:var(--muted);font-size:13px;font-weight:600">${L.betLabel}</span>
           <input type="range" id="betRange">
           <strong id="betVal"></strong>
         </div>
         <div class="quick" id="quickBets">
-          <button data-b="100">100</button>
-          <button data-b="500">500</button>
-          <button data-b="1000">1000</button>
-          <button data-b="all">ВА-БАНК</button>
+          <button type="button" data-b="100">100</button>
+          <button type="button" data-b="500">500</button>
+          <button type="button" data-b="1000">1000</button>
+          <button type="button" data-b="half">1/2</button>
+          <button type="button" data-b="all">${L.allIn}</button>
         </div>
-        <div class="row" style="margin-top:0">
-          <button class="btn primary" id="playBtn">🎲 Сделать ставку и играть</button>
+        <div class="row" style="margin-top:6px">
+          <button class="btn primary" id="playBtn" type="button">${L.placeBetBtn}</button>
+          <button class="btn next-house" id="skipOrNextBtn" type="button">
+            ${isLast ? L.finishJourneyBtn : L.goNextHouseBtn}
+          </button>
         </div>
       </div>
+
       <div id="gameBody" style="display:none"></div>
+      <div id="postRoundControls" class="decision-bar" style="display:none">
+        <button class="btn" id="playAgainInHouseBtn" type="button">${L.playAgainHouseBtn}</button>
+        <button class="btn next-house" id="manualNextHouseBtn" type="button">
+          ${isLast ? L.finishJourneyBtn : L.goNextHouseBtn}
+        </button>
+      </div>
     </div>`;
 
   const minBet = Math.min(MIN_BET, S.money);
   const maxBet = S.money;
   const step = Math.max(10, Math.floor((maxBet - minBet) / 50) || 10);
   const range = $('betRange');
-  range.min = minBet; range.max = maxBet; range.step = step;
-  range.value = Math.min(maxBet, Math.max(minBet, 100));
+  range.min = minBet;
+  range.max = maxBet;
+  range.step = step;
+  range.value = Math.min(maxBet, Math.max(minBet, 200));
 
   const betVal = $('betVal');
   const updateBet = () => {
-    let v = Math.min(maxBet, Math.max(minBet, Math.round(range.value)));
+    const v = Math.min(maxBet, Math.max(minBet, Math.round(range.value)));
     betVal.textContent = fmt(v);
   };
-  range.oninput = updateBet; updateBet();
+  range.addEventListener('input', updateBet);
+  updateBet();
 
-  $('quickBets').onclick = e => {
-    const b = e.target.dataset.b;
-    if (!b) return;
+  $('quickBets').addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const b = btn.dataset.b;
     if (b === 'all') range.value = maxBet;
+    else if (b === 'half') range.value = Math.max(minBet, Math.round(maxBet / 2));
     else range.value = Math.min(maxBet, Math.max(minBet, +b));
     updateBet();
-  };
+  });
 
-  $('playBtn').onclick = () => {
+  $('skipOrNextBtn').addEventListener('click', () => {
+    goToHouse(S.pos + 1);
+  });
+
+  $('playAgainInHouseBtn').addEventListener('click', () => {
+    renderBoard();
+  });
+
+  $('manualNextHouseBtn').addEventListener('click', () => {
+    goToHouse(S.pos + 1);
+  });
+
+  $('playBtn').addEventListener('click', () => {
     const bet = Math.min(maxBet, Math.max(minBet, Math.round(range.value)));
     $('betbox').style.display = 'none';
     const body = $('gameBody');
     body.style.display = 'block';
+    activeRound = true;
     S.money -= bet;
-    renderMoney();
-    addLog(`Дом ${S.pos}: ставка ${fmt(bet)} на «${g.name}».`);
+    renderStats();
+    addLog(tpl(L.logBet, { pos: S.pos, bet: fmt(bet), game: g.name }));
 
     let finished = false;
     const finish = mult => {
       if (finished) return;
       finished = true;
+      activeRound = false;
+
       const ret = Math.round(bet * mult);
       S.money += ret;
-      renderMoney();
       house.done = true;
+      house.rounds++;
+      renderStats();
+      renderPath();
 
       const net = ret - bet;
+      if (net > 0) sfxWin();
+      else if (net < 0) sfxLose();
+
       addLog(
-        `${g.icon} ${g.name}: ${net > 0 ? '+' : ''}${fmt(net)} (выплата ×${mult})`,
+        tpl(t().logResult, {
+          icon,
+          game: t().games[house.type].name,
+          net: (net > 0 ? '+' : '') + fmt(net),
+          mult
+        }),
         net > 0 ? 'win' : net < 0 ? 'lose' : ''
       );
 
       if (S.money <= 0) {
-        setTimeout(() => gameOver('prison'), 1100);
+        setTimeout(() => gameOver(), 900);
         return;
       }
-      setTimeout(renderBoard, 1200);
+
+      // Игрок САМ решает, когда перейти в следующий дом — показываем панель выбора
+      const postBar = $('postRoundControls');
+      if (postBar) postBar.style.display = 'flex';
     };
 
     startGame(house.type, body, bet, finish);
-  };
+  });
 }
 
-function gameOver(reason) {
+function gameOver() {
   S.over = true;
+  activeRound = false;
+  const L = t();
   const ov = $('overlay');
   $('modal').innerHTML = `
     <div class="big">🚔</div>
-    <h2>Тюрьма</h2>
-    <p>Вы спустили все деньги до конца пути. Казино не прощает долгов — вас увезли.</p>
-    <button class="btn primary" id="ovBtn" style="margin-top:18px">🔁 Начать заново</button>`;
+    <h2>${L.prisonTitle}</h2>
+    <p>${L.prisonDesc}</p>
+    <button class="btn primary" id="ovBtn" type="button" style="margin-top:18px">${L.newGameBtn}</button>`;
   ov.classList.remove('hidden');
-  $('ovBtn').onclick = newGame;
-  addLog('Вы потеряли всё. Тюрьма.', 'lose');
+  $('ovBtn').addEventListener('click', newGame);
+  addLog(L.logPrison, 'lose');
 }
 
 /* =====================================================================
@@ -391,18 +2058,20 @@ function gameOver(reason) {
    ===================================================================== */
 function gameCockroach(root, bet, done) {
   const GOAL = 30;
-  const racers = [
-    { name: 'Вы', emoji: '🪳', pos: 0, human: true },
-    { name: 'Рыжий', emoji: '🐜', pos: 0 },
-    { name: 'Усатый', emoji: '🐞', pos: 0 },
-    { name: 'Чёрный', emoji: '🦗', pos: 0 }
-  ];
+  const g = t().games.cockroach;
+  const emojis = ['🪳', '🐜', '🐞', '🦗'];
+  const racers = g.racers.map((name, idx) => ({
+    name,
+    emoji: emojis[idx],
+    pos: 0,
+    human: idx === 0
+  }));
   let over = false;
 
   root.innerHTML = `
     <div class="lanes" id="lanes"></div>
-    <div class="row" id="diceRow" style="min-height:46px"></div>
-    <div class="row"><button class="btn primary" id="rollBtn">🎲 Бросить кубик</button></div>
+    <div class="row" id="diceRow" style="min-height:50px"></div>
+    <div class="row"><button class="btn primary" id="rollBtn" type="button">${g.rollBtn}</button></div>
     <div id="res"></div>`;
 
   const lanesEl = root.querySelector('#lanes');
@@ -414,36 +2083,35 @@ function gameCockroach(root, bet, done) {
     lanesEl.innerHTML = racers.map(r => `
       <div class="lane ${r.human ? 'human' : ''}">
         <span class="lane-name">${r.emoji} ${r.name}</span>
-        <div class="lane-bar"><div class="lane-fill" style="width:${Math.min(100, r.pos / GOAL * 100)}%"></div></div>
-        <span class="lane-pos">${r.pos}</span>
+        <div class="lane-bar"><div class="lane-fill" style="width:${Math.min(100, (r.pos / GOAL) * 100)}%"></div></div>
+        <span class="lane-pos">${r.pos}/${GOAL}</span>
       </div>`).join('');
   };
   drawLanes();
 
-  rollBtn.onclick = () => {
+  rollBtn.addEventListener('click', () => {
     if (over) return;
     rollBtn.disabled = true;
+    sfxRoll();
 
     const rolls = racers.map(() => d6());
     diceEl.innerHTML = rolls.map((v, i) => `<span class="die ${i === 0 ? 'human' : ''}">${v}</span>`).join('');
-    racers.forEach((r, i) => r.pos += rolls[i]);
+    racers.forEach((r, i) => { r.pos += rolls[i]; });
 
     setTimeout(() => {
       drawLanes();
-
-      if (racers[0].pos >= GOAL) return endRound(true, '🏆 Вы дошли первым!');
+      if (racers[0].pos >= GOAL) return endRound(true, g.win);
       const bot = racers.slice(1).find(r => r.pos >= GOAL);
-      if (bot) return endRound(false, `😞 ${bot.emoji} ${bot.name} пришёл первым.`);
-
+      if (bot) return endRound(false, tpl(g.lose, { name: `${bot.emoji} ${bot.name}` }));
       rollBtn.disabled = false;
-    }, 400);
-  };
+    }, 350);
+  });
 
   function endRound(win, msg) {
     over = true;
-    rollBtn.disabled = true;
-    resEl.innerHTML = `<div class="result ${win ? 'win' : 'lose'}">${msg} ${win ? 'Выплата ×3' : 'Ставка потеряна.'}</div>`;
-    setTimeout(() => done(win ? 3 : 0), 1100);
+    rollBtn.style.display = 'none';
+    resEl.innerHTML = `<div class="result ${win ? 'win' : 'lose'}">${msg}</div>`;
+    done(win ? 3 : 0);
   }
 }
 
@@ -451,6 +2119,7 @@ function gameCockroach(root, bet, done) {
    ИГРА 2 — ОЧКО 21
    ===================================================================== */
 function gameBlackjack(root, bet, done) {
+  const g = t().games.blackjack;
   const grid = [];
   for (let r = 0; r < 6; r++) {
     grid.push([]);
@@ -461,13 +2130,13 @@ function gameBlackjack(root, bet, done) {
 
   root.innerHTML = `
     <div class="sumline">
-      <div>Вы: <b id="pSum">0</b> <span id="pCards" style="color:var(--muted);font-size:13px"></span></div>
-      <div>Дилер: <b id="dSum">0</b> <span id="dCards" style="color:var(--muted);font-size:13px"></span></div>
+      <div>${g.you}: <b id="pSum">0</b> <span id="pCards" style="color:var(--muted);font-size:13px"></span></div>
+      <div>${g.dealer}: <b id="dSum">0</b> <span id="dCards" style="color:var(--muted);font-size:13px"></span></div>
     </div>
     <div id="gridBox"></div>
-    <div class="row">
-      <button class="btn primary" id="hitBtn">🃏 Взять карту</button>
-      <button class="btn" id="standBtn">✋ Хватит</button>
+    <div class="row" id="bjActionRow">
+      <button class="btn primary" id="hitBtn" type="button">${g.hit}</button>
+      <button class="btn" id="standBtn" type="button">${g.stand}</button>
     </div>
     <div id="res"></div>`;
 
@@ -475,6 +2144,7 @@ function gameBlackjack(root, bet, done) {
   const resEl = root.querySelector('#res');
   const hitBtn = root.querySelector('#hitBtn');
   const standBtn = root.querySelector('#standBtn');
+  const actionRow = root.querySelector('#bjActionRow');
 
   function drawGrid(hl) {
     let html = '<table class="cardgrid"><tr><th></th>';
@@ -500,12 +2170,13 @@ function gameBlackjack(root, bet, done) {
   function updateUI() {
     root.querySelector('#pSum').textContent = pSum;
     root.querySelector('#dSum').textContent = dSum;
-    root.querySelector('#pCards').textContent = pCards.map(x => x.v).join(' + ');
-    root.querySelector('#dCards').textContent = dCards.map(x => x.v).join(' + ');
+    root.querySelector('#pCards').textContent = pCards.length ? `(${pCards.map(x => x.v).join(' + ')})` : '';
+    root.querySelector('#dCards').textContent = dCards.length ? `(${dCards.map(x => x.v).join(' + ')})` : '';
   }
 
-  hitBtn.onclick = () => {
+  hitBtn.addEventListener('click', () => {
     if (over) return;
+    sfxRoll();
     const card = drawCard();
     pSum += card.v;
     pCards.push(card);
@@ -514,55 +2185,61 @@ function gameBlackjack(root, bet, done) {
 
     if (pSum > 21) {
       over = true;
-      hitBtn.disabled = standBtn.disabled = true;
-      resEl.innerHTML = `<div class="result lose">💥 Перебор (${pSum})! Ставка потеряна.</div>`;
-      setTimeout(() => done(0), 1200);
+      actionRow.style.display = 'none';
+      resEl.innerHTML = `<div class="result lose">${tpl(g.bust, { sum: pSum })}</div>`;
+      done(0);
     } else if (pSum === 21) {
       standBtn.click();
     }
-  };
+  });
 
-  standBtn.onclick = () => {
+  standBtn.addEventListener('click', () => {
     if (over) return;
     over = true;
-    hitBtn.disabled = standBtn.disabled = true;
+    actionRow.style.display = 'none';
     dealerTurn();
-  };
+  });
 
   function dealerTurn() {
     if (dSum >= 17) return resolve();
+    sfxRoll();
     const card = drawCard();
     dSum += card.v;
     dCards.push(card);
     drawGrid([card.r, card.c]);
     updateUI();
-    setTimeout(dealerTurn, 650);
+    setTimeout(dealerTurn, 550);
   }
 
   function resolve() {
     let mult, msg, cls;
-    if (dSum > 21)      { mult = 2; msg = `Дилер перебрал (${dSum}) — вы выиграли! ×2`; cls = 'win'; }
-    else if (dSum > pSum) { mult = 0; msg = `Дилер ближе (${dSum} против ${pSum}). Вы проиграли.`; cls = 'lose'; }
-    else if (dSum < pSum) { mult = 2; msg = `У вас больше (${pSum} против ${dSum}) — победа! ×2`; cls = 'win'; }
-    else                 { mult = 1; msg = `Ничья (${pSum}). Ставка возвращается.`; cls = 'push'; }
-
+    if (dSum > 21) {
+      mult = 2; msg = tpl(g.dBust, { dSum }); cls = 'win';
+    } else if (dSum > pSum) {
+      mult = 0; msg = tpl(g.dWin, { dSum, pSum }); cls = 'lose';
+    } else if (dSum < pSum) {
+      mult = 2; msg = tpl(g.pWin, { pSum, dSum }); cls = 'win';
+    } else {
+      mult = 1; msg = tpl(g.push, { pSum }); cls = 'push';
+    }
     resEl.innerHTML = `<div class="result ${cls}">${msg}</div>`;
-    setTimeout(() => done(mult), 1300);
+    done(mult);
   }
 }
 
 /* =====================================================================
-   ИГРА 3 — АВТОМАТ
+   ИГРА 3 — АВТОМАТ (СЛОТЫ)
    ===================================================================== */
 function gameSlots(root, bet, done) {
+  const g = t().games.slots;
   const base = ['🍒', '🍒', '🍒', '🍉', '🍉', '7️⃣'];
   const reels = [0, 1, 2].map(() => shuffle([...base]));
   let over = false;
 
   root.innerHTML = `
     <div class="reels" id="reels"></div>
-    <div class="row" id="diceRow" style="min-height:46px"></div>
-    <div class="row"><button class="btn primary" id="spinBtn">🎲 Крутить</button></div>
+    <div class="row" id="diceRow" style="min-height:50px"></div>
+    <div class="row"><button class="btn primary" id="spinBtn" type="button">${g.spin}</button></div>
     <div id="res"></div>`;
 
   const reelsEl = root.querySelector('#reels');
@@ -578,10 +2255,11 @@ function gameSlots(root, bet, done) {
   }
   drawReels();
 
-  spinBtn.onclick = () => {
+  spinBtn.addEventListener('click', () => {
     if (over) return;
     over = true;
-    spinBtn.disabled = true;
+    spinBtn.style.display = 'none';
+    sfxRoll();
 
     const rolls = [d6(), d6(), d6()];
     const hits = rolls.map(r => r - 1);
@@ -591,34 +2269,35 @@ function gameSlots(root, bet, done) {
       drawReels(hits);
       const syms = hits.map((h, i) => reels[i][h]);
 
-      let mult = 0, msg = 'Ничего не совпало. Ставка потеряна.', cls = 'lose';
+      let mult = 0, msg, cls = 'lose';
       if (syms[0] === syms[1] && syms[1] === syms[2]) {
-        if (syms[0] === '🍒')      { mult = 2;  msg = '🍒🍒🍒 Три вишни! ×2'; cls = 'win'; }
-        else if (syms[0] === '🍉') { mult = 5;  msg = '🍉🍉🍉 Три арбуза! ×5'; cls = 'win'; }
-        else                       { mult = 10; msg = '7️⃣7️⃣7️⃣ ТРИ СЕМЁРКИ! ×10'; cls = 'win'; }
+        if (syms[0] === '🍒') { mult = 2; msg = g.c2; cls = 'win'; }
+        else if (syms[0] === '🍉') { mult = 5; msg = g.c5; cls = 'win'; }
+        else { mult = 10; msg = g.c10; cls = 'win'; }
       } else {
-        msg = `${syms.join(' ')} — не совпало. Ставка потеряна.`;
+        msg = tpl(g.miss, { syms: syms.join(' ') });
       }
 
       resEl.innerHTML = `<div class="result ${cls}">${msg}</div>`;
-      setTimeout(() => done(mult), 1300);
-    }, 500);
-  };
+      done(mult);
+    }, 420);
+  });
 }
 
 /* =====================================================================
    ИГРА 4 — ДАРТС
    ===================================================================== */
 function gameDarts(root, bet, done) {
+  const g = t().games.darts;
   const THROWS = 5;
   const list = [];
   let over = false;
 
   root.innerHTML = `
     <div class="throws" id="throws"></div>
-    <div class="sumline"><div>Сумма: <b id="total">0</b> / 111</div></div>
-    <div class="row" id="diceRow" style="min-height:46px"></div>
-    <div class="row"><button class="btn primary" id="throwBtn">🎯 Бросок (1/5)</button></div>
+    <div class="sumline"><div>${g.sum}: <b id="total">0</b> / 111</div></div>
+    <div class="row" id="diceRow" style="min-height:50px"></div>
+    <div class="row"><button class="btn primary" id="throwBtn" type="button">${tpl(g.throwBtn, { cur: 1, max: THROWS })}</button></div>
     <div id="res"></div>`;
 
   const throwsEl = root.querySelector('#throws');
@@ -628,13 +2307,14 @@ function gameDarts(root, bet, done) {
   const resEl = root.querySelector('#res');
 
   function drawThrows() {
-    throwsEl.innerHTML = list.map(t =>
-      `<div class="throw">${t.a} × ${t.b}<b>${t.p}</b></div>`).join('');
-    totalEl.textContent = list.reduce((s, t) => s + t.p, 0);
+    throwsEl.innerHTML = list.map(item =>
+      `<div class="throw">${item.a} × ${item.b}<b>${item.p}</b></div>`).join('');
+    totalEl.textContent = list.reduce((s, item) => s + item.p, 0);
   }
 
-  throwBtn.onclick = () => {
+  throwBtn.addEventListener('click', () => {
     if (over) return;
+    sfxRoll();
     const a = d6(), b = d6();
     list.push({ a, b, p: a * b });
     diceEl.innerHTML = `<span class="die">${a}</span><span class="die">${b}</span>`;
@@ -642,22 +2322,22 @@ function gameDarts(root, bet, done) {
 
     if (list.length >= THROWS) {
       over = true;
-      throwBtn.disabled = true;
-      setTimeout(resolve, 700);
+      throwBtn.style.display = 'none';
+      setTimeout(resolve, 450);
     } else {
-      throwBtn.textContent = `🎯 Бросок (${list.length + 1}/${THROWS})`;
+      throwBtn.textContent = tpl(g.throwBtn, { cur: list.length + 1, max: THROWS });
     }
-  };
+  });
 
   function resolve() {
-    const total = list.reduce((s, t) => s + t.p, 0);
+    const total = list.reduce((s, item) => s + item.p, 0);
     let mult, msg, cls;
-    if (total >= 111)     { mult = 6; msg = `🎯 ${total} очков — ЦЕЛЬ ВЗЯТА! Выплата ×6`; cls = 'win'; }
-    else if (total >= 85) { mult = 2; msg = `🎯 ${total} очков — неплохо! Выплата ×2`; cls = 'win'; }
-    else if (total >= 60) { mult = 1; msg = `🎯 ${total} очков — ставка возвращается.`; cls = 'push'; }
-    else                  { mult = 0; msg = `🎯 Всего ${total} очков. Мимо цели.`; cls = 'lose'; }
+    if (total >= 111) { mult = 6; msg = tpl(g.w6, { total }); cls = 'win'; }
+    else if (total >= 85) { mult = 2; msg = tpl(g.w2, { total }); cls = 'win'; }
+    else if (total >= 60) { mult = 1; msg = tpl(g.w1, { total }); cls = 'push'; }
+    else { mult = 0; msg = tpl(g.lose, { total }); cls = 'lose'; }
     resEl.innerHTML = `<div class="result ${cls}">${msg}</div>`;
-    setTimeout(() => done(mult), 1300);
+    done(mult);
   }
 }
 
@@ -668,24 +2348,24 @@ const RED_NUMS = [1, 2, 4, 6, 8, 10, 12];
 const BLACK_NUMS = [3, 5, 9, 15, 16, 18, 20, 24, 25, 30, 36];
 
 function gameRoulette(root, bet, done) {
+  const g = t().games.roulette;
   let choice = 'red';
-  let num = 6;
   let over = false;
 
   root.innerHTML = `
     <div class="opts" id="opts">
-      <div class="opt red sel" data-c="red">🔴 Красное ×2</div>
-      <div class="opt black" data-c="black">⚫ Чёрное ×2</div>
-      <div class="opt" data-c="num">🎯 Точное число ×8
-        <input class="numinput" id="numIn" type="number" min="1" max="36" value="6" style="margin-left:8px">
+      <div class="opt sel" data-c="red">${g.redOpt}</div>
+      <div class="opt" data-c="black">${g.blackOpt}</div>
+      <div class="opt" data-c="num">${g.numOpt}
+        <input class="numinput" id="numIn" type="number" min="1" max="36" value="6">
       </div>
     </div>
     <div class="legend">
-      <span class="r">Красные: ${RED_NUMS.join(', ')}</span><br>
-      <span class="b">Чёрные: ${BLACK_NUMS.join(', ')}</span>
+      <span class="r">${g.redList}: ${RED_NUMS.join(', ')}</span><br>
+      <span class="b">${g.blackList}: ${BLACK_NUMS.join(', ')}</span>
     </div>
-    <div class="row" id="diceRow" style="min-height:46px;margin-top:14px"></div>
-    <div class="row"><button class="btn primary" id="spinBtn">🎡 Крутить</button></div>
+    <div class="row" id="diceRow" style="min-height:50px;margin-top:12px"></div>
+    <div class="row"><button class="btn primary" id="spinBtn" type="button">${g.spin}</button></div>
     <div id="res"></div>`;
 
   const optsEl = root.querySelector('#opts');
@@ -694,22 +2374,23 @@ function gameRoulette(root, bet, done) {
   const spinBtn = root.querySelector('#spinBtn');
   const resEl = root.querySelector('#res');
 
-  optsEl.onclick = e => {
+  optsEl.addEventListener('click', e => {
     const opt = e.target.closest('.opt');
-    if (!opt) return;
-    if (e.target === numIn) return;
+    if (!opt || e.target === numIn) return;
     choice = opt.dataset.c;
     [...optsEl.children].forEach(o => o.classList.toggle('sel', o === opt));
-  };
-  numIn.oninput = () => {
+  });
+
+  numIn.addEventListener('input', () => {
     choice = 'num';
     [...optsEl.children].forEach(o => o.classList.toggle('sel', o.dataset.c === 'num'));
-  };
+  });
 
-  spinBtn.onclick = () => {
+  spinBtn.addEventListener('click', () => {
     if (over) return;
     over = true;
-    spinBtn.disabled = true;
+    spinBtn.style.display = 'none';
+    sfxRoll();
 
     const a = d6(), b = d6();
     const p = a * b;
@@ -718,27 +2399,27 @@ function gameRoulette(root, bet, done) {
 
     setTimeout(() => {
       const isRed = RED_NUMS.includes(p);
-      const colorName = isRed ? '🔴 красное' : '⚫ чёрное';
+      const colorName = isRed ? g.redWord : g.blackWord;
       let mult = 0, msg, cls = 'lose';
 
       if (choice === 'red' || choice === 'black') {
         const hit = (choice === 'red') === isRed;
-        if (hit) { mult = 2; msg = `Выпало ${p} — ${colorName}. Вы угадали! ×2`; cls = 'win'; }
-        else     { msg = `Выпало ${p} — ${colorName}. Мимо.`; }
+        if (hit) { mult = 2; msg = tpl(g.winColor, { p, color: colorName }); cls = 'win'; }
+        else { msg = tpl(g.loseColor, { p, color: colorName }); }
       } else {
-        const n = Math.max(1, Math.min(36, parseInt(numIn.value) || 1));
-        if (p === n) { mult = 8; msg = `Выпало ${p} — точно в цель! ×8`; cls = 'win'; }
-        else         { msg = `Выпало ${p}, а вы ставили на ${n}. Мимо.`; }
+        const n = Math.max(1, Math.min(36, parseInt(numIn.value, 10) || 1));
+        if (p === n) { mult = 8; msg = tpl(g.winNum, { p }); cls = 'win'; }
+        else { msg = tpl(g.loseNum, { p, n }); }
       }
 
       resEl.innerHTML = `<div class="result ${cls}">${msg}</div>`;
-      setTimeout(() => done(mult), 1300);
-    }, 500);
-  };
+      done(mult);
+    }, 450);
+  });
 }
 
 /* =====================================================================
-   ЗАПУСК
+   ЗАПУСК И ОБРАБОТЧИКИ ВЕРХНЕЙ ПАНЕЛИ
    ===================================================================== */
 function startGame(type, root, bet, done) {
   switch (type) {
@@ -749,6 +2430,39 @@ function startGame(type, root, bet, done) {
     case 'roulette':  return gameRoulette(root, bet, done);
   }
 }
+
+$('langSelect').value = currentLang;
+$('langSelect').addEventListener('change', e => {
+  currentLang = e.target.value;
+  try { localStorage.setItem('casino_lang', currentLang); } catch (err) {}
+  if (!activeRound) renderBoard();
+  else {
+    applyStaticLabels();
+    renderStats();
+    renderPath();
+  }
+});
+
+$('themeBtn').addEventListener('click', () => {
+  currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  applyTheme();
+});
+
+$('soundBtn').addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+  $('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+});
+
+$('prevHouseTopBtn').addEventListener('click', () => {
+  if (S.pos > 1) goToHouse(S.pos - 1);
+});
+
+$('nextHouseTopBtn').addEventListener('click', () => {
+  if (S.pos === 0) goToHouse(1);
+  else if (S.pos <= PATH_LENGTH) goToHouse(S.pos + 1);
+});
+
+$('restartTopBtn').addEventListener('click', newGame);
 
 newGame();
 </script>
